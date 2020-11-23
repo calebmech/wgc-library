@@ -4,7 +4,11 @@ import SearchWorker from '../workers/search.worker'
 import { useDebouncedCallback } from 'use-debounce';
 
 export default function Cards({ query }) {
-  const searchWorker = React.useRef(new SearchWorker());
+  const searchWorker = React.useRef(null);
+  if (!searchWorker.current) {
+    searchWorker.current = new SearchWorker()
+  }
+
   const [results, setResults] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const searchWorkerCallback = React.useCallback(event => {
@@ -67,21 +71,6 @@ export default function Cards({ query }) {
               </footer>
             </div>
           </article>
-          // <div className="bor"></div>
-          // <div className="card mb-3" style={{maxWidth: 700}}>
-          //   <div className="row g-0">
-          //     <div className="col-md-3">
-          //       <img src={imageLinks?.smallThumbnail} />
-          //     </div>
-          //     <div className="col-md-9">
-          //       <div className="card-body">
-          //         <h5 className="card-title">{title}{subtitle && `: ${subtitle}`}</h5>
-          //         <h6 class="card-subtitle mb-2 text-muted"></h6>
-          //         <p className="card-text">{description?.slice(0, 160) + '...'}</p>
-          //       </div>
-          //     </div>
-          //   </div>
-          // </div>
         )
       })
     }
