@@ -1,96 +1,43 @@
 import React from 'react';
 import Image from 'next/image';
-// import googleBooks from '../public/google-books.json';
-// import { matchSorter } from 'match-sorter';
-// import Fuse from 'fuse.js'
 import SearchWorker from '../workers/search.worker'
-
-// function fuzzySearchMultipleWords(
-//   rows, // array of data [{a: "a", b: "b"}, {a: "c", b: "d"}]
-//   keys, // keys to search ["a", "b"]
-//   filterValue, // potentially multi-word search string "two words"
-// ) {
-//   if (!filterValue || !filterValue.length) {
-//     return rows
-//   }
-
-//   const terms = filterValue.split(' ')
-//   if (!terms) {
-//     return rows
-//   }
-
-//   // reduceRight will mean sorting is done by score for the _first_ entered word.
-//   return terms.reduceRight(
-//     (results, term) => matchSorter(results, term, {keys}),
-//     rows,
-//   )
-// }
-
-
-// const books = Object.values(googleBooks).map(book => ({
-//   ...book.volumeInfo,
-//   authors: book.volumeInfo?.authors?.join(', ')
-// }));
-
-// const options = {
-//   keys: [
-//     {
-//       name: 'title',
-//       weight: 1
-//     },
-//     {
-//       name: 'authors',
-//       weight: 0.8
-//     },
-//     {
-//       name: 'subtitle',
-//       weight: 0.7
-//     },
-//     {
-//       name: 'description',
-//       weight: 0.3
-//     }
-//   ]
-// }
+import { useDebouncedCallback } from 'use-debounce';
 
 export default function Cards({ query }) {
-  const searchWorker = React.useRef(new SearchWorker);
+  const searchWorker = React.useRef(new SearchWorker());
   const [results, setResults] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
   const searchWorkerCallback = React.useCallback(event => {
     setResults(event.data)
+    setLoading(false)
+  }, [])
+
+  const queryCallback = useDebouncedCallback(query => {
+    searchWorker.current.postMessage(query);
+  }, 400)
+
+  React.useEffect(() => {
+    searchWorker.current.addEventListener('message', searchWorkerCallback)
+
+    return () => searchWorker.current.removeEventListener('message', searchWorkerCallback)
   }, [])
 
   React.useEffect(() => {
-    searchWorker.addEventListener('message', searchWorkerCallback)
-
-    return () => searchWorker.removeEventListener('message', searchWorkerCallback)
-  }, [])
-
-  React.useEffect(() => searchWorker.postMessage(query), [])
-
-  // const rankedStrings = React.useMemo(() => 
-  //   stringSimilarity
-  //     .findBestMatch(query, searchStrings)
-  //     .ratings
-  //     .filter(({ rating }) => rating > 0.1)
-  //     .map(({rating}, i) => ({ rating, i }))
-  //     .sort((a, b) => b.rating - a.rating)
-  // , [query]);
-  // console.log(rankedStrings);
-
-  // const rankedBooks = React.useMemo(() => fuzzySearchMultipleWords(books, ["title", "subtitle", "description", "authors"], query), [query]);
-  
+    setLoading(true);
+    queryCallback.callback(query)
+  }, [query])
 
   return (
     <ul>
-      {results.map((book, i) => {
+      {/* <p className="text-red-600 text-4xl">{loading && 'loading'}</p> */}
+      {!loading && results.map((book, i) => {
         const { title, subtitle, authors, description, imageLinks } = book;
 
         return (
           <article key={i} className="border rounded-lg flex my-3 overflow-hidden">
             {imageLinks && 
               <div className="relative h-auto w-28 flex-none border-r">
-                <Image src={imageLinks.thumbnail} layout="fill" objectFit="fill6" className="object-left-top" />
+                <Image src={imageLinks.thumbnail} layout="fill" objectFit="contain" className="object-center" />
               </div>
             }
 
@@ -100,7 +47,7 @@ export default function Cards({ query }) {
                 <h2 className="text-gray-600">{authors}</h2>
               </header>
               <p className="mt-1 text-gray-900">
-                {description?.slice(0, 140)}
+                {description}
               </p>
 
               <footer className="flex mt-3 mb-1">

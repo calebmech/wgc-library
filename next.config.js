@@ -3,9 +3,9 @@ module.exports = {
     domains: ["books.google.com"],
   },
   webpack: (config) => {
-    config.module.rules.push({
+    config.module.rules.unshift({
       test: /\.worker\.js$/,
-      use: { loader: "worker-loader" },
+      loader: "worker-loader",
     });
 
     return config;

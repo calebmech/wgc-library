@@ -1,4 +1,5 @@
 import googleBooks from "../public/google-books.json";
+import Fuse from "fuse.js";
 
 const books = Object.values(googleBooks).map((book) => ({
   ...book.volumeInfo,
@@ -30,7 +31,7 @@ const fuse = new Fuse(books, options);
 function handleEvent(event) {
   const fuseResults = fuse.search(event.data);
 
-  postMessage(fuseResults.map(({ item }) => item));
+  self.postMessage(fuseResults.map(({ item }) => item));
 }
 
-onmessage = handleEvent;
+self.addEventListener("message", handleEvent);

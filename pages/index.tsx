@@ -1,11 +1,6 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 
-const LazyTable = dynamic(() => import('../components/Table'), {
-  loading: () => <p>...</p>,
-  ssr: false,
-});
-
 const LazyCards = dynamic(() => import('../components/Cards'), {
   loading: () => <p>...</p>,
   ssr: false,
@@ -30,7 +25,7 @@ export default function Home() {
         />
       </header>
 
-      {/* <LazyCards query={query} /> */}
+      <LazyCards query={query} />
       {/* <LazyTable /> */}
     </div>
   );
