@@ -18,7 +18,7 @@ export default function Home() {
 
         <input
           type="search"
-          className="text-lg my-3 mt-6 py-3 px-6 border rounded-md w-full"
+          className="text-lg my-3 mt-6 py-3 px-6 border rounded-lg w-full"
           placeholder="Search..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -26,7 +26,6 @@ export default function Home() {
       </header>
 
       <LazyCards query={query} />
-      {/* <LazyTable /> */}
     </div>
   );
 }
