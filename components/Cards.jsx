@@ -9,16 +9,19 @@ export default function Cards({ query }) {
     searchWorker.current = new SearchWorker()
   }
 
+  const [pagesLoaded, setPagesLoaded] = React.useState(1);
+
   const [results, setResults] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const searchWorkerCallback = React.useCallback(event => {
     setResults(event.data)
     setLoading(false)
+    setPagesLoaded(1)
   }, [])
 
   const queryCallback = useDebouncedCallback(query => {
     searchWorker.current.postMessage(query);
-  }, 300)
+  }, 0)
 
   React.useEffect(() => {
     searchWorker.current.addEventListener('message', searchWorkerCallback)
@@ -32,9 +35,15 @@ export default function Cards({ query }) {
   }, [query])
 
   return (
-    <ul>
-      {/* <p className="text-red-600 text-4xl">{loading && 'loading'}</p> */}
-      {!loading && results.map((book, i) => <Card book={book} key={i}/>)}
-    </ul>
+    <div>
+      <ul>
+        {results.slice(0, 20 * pagesLoaded).map((book, i) => <Card book={book} key={i}/>)}
+      </ul>
+      {results.length > 0 &&
+        <div className="text-center">
+          <button onClick={() => setPagesLoaded(pagesLoaded + 1)}>Load more</button>
+        </div>
+      }
+    </div>
   )
 }
