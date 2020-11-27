@@ -25,6 +25,7 @@ const options = {
       weight: 0.3,
     },
   ],
+  ignoreLocation: true,
 };
 const fuse = new Fuse(books, options);
 
