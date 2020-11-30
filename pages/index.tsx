@@ -58,7 +58,9 @@ export default function Home() {
               />
             </div>
           )}
-          {bagOpen && <BookBag onClose={() => setBagOpen(false)} />}
+          {(bagOpen || !isMobile) && (
+            <BookBag onClose={() => setBagOpen(false)} />
+          )}
         </div>
       </BookBagProvider>
     </DatabaseProvider>
