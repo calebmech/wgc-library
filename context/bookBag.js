@@ -16,6 +16,10 @@ function reducer(books = [], { type, isbn }) {
       return books.filter((book) => book !== isbn);
     }
 
+    case "CLEAR_BAG": {
+      return [];
+    }
+
     default:
       return books;
   }
@@ -36,10 +40,13 @@ export default function BookBagProvider(props) {
       isbn,
     });
 
+  const clearBag = () => dispatch({ type: "CLEAR_BAG" });
+
   const value = {
     books,
     addBookToBag,
     removeBookFromBag,
+    clearBag,
   };
 
   return <BookBagContext.Provider value={value} {...props} />;

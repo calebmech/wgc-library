@@ -5,16 +5,23 @@ import { useDatabase } from '../context/database';
 
 export default function BookBag() {
   const database = useDatabase();
-  const { books, removeBookFromBag } = useBookBag();
+  const { books, removeBookFromBag, clearBag } = useBookBag();
   const [name, setName] = React.useState("");
 
+  const [requesting, setRequesting] = React.useState(false);
+
   const handleBookRequest = () => {
+    setRequesting(true);
+
     fetch("/api/sendEmail", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ name, books })
+    }).then(() => {
+      clearBag();
+      setRequesting(false);
     })
   }
 
@@ -55,7 +62,7 @@ export default function BookBag() {
           />
 
           <button
-            disabled={name.trim().length === 0}
+            disabled={requesting || books.length === 0 || name.trim().length === 0}
             onClick={handleBookRequest}
             className="bg-blue-500 text-gray-100 py-1 px-2 rounded-md mr-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
           >
