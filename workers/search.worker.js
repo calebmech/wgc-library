@@ -15,33 +15,41 @@ const options = {
       weight: 0.7,
     },
     {
+      name: "categories",
+      weight: 0.5,
+    },
+    {
       name: "description",
       weight: 0.3,
     },
   ],
   ignoreLocation: true,
+  threshold: 0.4,
 };
 
-let database, fuse;
+let database, fuse, books;
 
 function handleEvent(event) {
   const isQuery = typeof event.data === "string";
 
   if (isQuery) {
     if (!database) {
-      return console.error("Database is not initialized");
+      return;
     }
 
-    const fuseResults = fuse.search(event.data);
+    if (event.data.length === 0) {
+      self.postMessage(books);
+    } else {
+      const fuseResults = fuse.search(event.data);
 
-    self.postMessage(fuseResults.map(({ item }) => item));
+      self.postMessage(fuseResults.map(({ item }) => item));
+    }
   } else if (!database) {
     database = event.data;
 
-    const books = Object.entries(database).map(([isbn, book]) => ({
+    books = Object.entries(database).map(([isbn, book]) => ({
       ...book.volumeInfo,
       isbn,
-      authors: book.volumeInfo?.authors?.join(", "),
     }));
 
     fuse = new Fuse(books, options);

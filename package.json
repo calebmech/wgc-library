@@ -20,6 +20,7 @@
     "string-similarity": "^4.0.3",
     "tailwindcss": "^2.0.1",
     "use-debounce": "^5.1.0",
+    "use-media": "^1.4.0",
     "worker-loader": "^3.0.5"
   },
   "devDependencies": {
