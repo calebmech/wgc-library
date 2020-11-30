@@ -31,7 +31,7 @@ export default function Home() {
               <div className="mb-6">
                 <input
                   type="search"
-                  className="text-lg my-3 mt-6 py-3 px-6 border rounded-lg w-full"
+                  className="text-lg my-3 mt-6 py-3 px-6 border rounded-lg w-full appearance-none"
                   placeholder="Search..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
