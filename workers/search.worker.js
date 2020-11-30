@@ -34,8 +34,6 @@ function handleEvent(event) {
 
     const fuseResults = fuse.search(event.data);
 
-    console.log(fuseResults);
-
     self.postMessage(fuseResults.map(({ item }) => item));
   } else if (!database) {
     database = event.data;

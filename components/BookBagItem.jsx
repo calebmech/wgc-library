@@ -16,7 +16,7 @@ const BookBagItem = ({
       <div>
         {title}
         <br />
-        <span className="text-gray-600">{authors.join(", ")}</span>
+        <span className="text-gray-600">{authors?.join(", ") || "\xa0"}</span>
       </div>
     </div>
 
