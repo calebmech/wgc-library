@@ -1,10 +1,4 @@
-import googleBooks from "../public/google-books.json";
 import Fuse from "fuse.js";
-
-const books = Object.values(googleBooks).map((book) => ({
-  ...book.volumeInfo,
-  authors: book.volumeInfo?.authors?.join(", "),
-}));
 
 const options = {
   keys: [
@@ -27,12 +21,33 @@ const options = {
   ],
   ignoreLocation: true,
 };
-const fuse = new Fuse(books, options);
+
+let database, fuse;
 
 function handleEvent(event) {
-  const fuseResults = fuse.search(event.data);
+  const isQuery = typeof event.data === "string";
 
-  self.postMessage(fuseResults.map(({ item }) => item));
+  if (isQuery) {
+    if (!database) {
+      return console.error("Database is not initialized");
+    }
+
+    const fuseResults = fuse.search(event.data);
+
+    console.log(fuseResults);
+
+    self.postMessage(fuseResults.map(({ item }) => item));
+  } else if (!database) {
+    database = event.data;
+
+    const books = Object.entries(database).map(([isbn, book]) => ({
+      ...book.volumeInfo,
+      isbn,
+      authors: book.volumeInfo?.authors?.join(", "),
+    }));
+
+    fuse = new Fuse(books, options);
+  }
 }
 
 self.addEventListener("message", handleEvent);

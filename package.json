@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.4.0",
     "@types/react-table": "^7.0.25",
     "autoprefixer": "^10.0.2",
     "fuse.js": "^6.4.3",

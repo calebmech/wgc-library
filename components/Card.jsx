@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { useBookBag } from '../context/bookBag';
 
 const lineLimitStyles = {
   textOverflow: 'ellipsis',
@@ -9,11 +10,12 @@ const lineLimitStyles = {
 }
 
 export default function Card({ book }) {
-  const { title, subtitle, authors, description, imageLinks } = book;
+  const { title, subtitle, authors, description, imageLinks, isbn } = book;
 
   const [expanded, setExpanded] = React.useState(false);
-  
 
+  const { addBookToBag } = useBookBag();
+  
   return (
     <article className="border rounded-lg flex my-3 overflow-hidden">
       {imageLinks && 
@@ -32,7 +34,7 @@ export default function Card({ book }) {
         </p>
 
         <footer className="flex mt-3 mb-1">
-          <button className="bg-blue-500 text-gray-100 py-1 px-2 rounded-md text-sm mr-2">
+          <button onClick={() => addBookToBag(isbn)} className="bg-blue-500 text-gray-100 py-1 px-2 rounded-md text-sm mr-2">
             <svg className="h-4 mr-2 mb-0.5 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
             </svg>

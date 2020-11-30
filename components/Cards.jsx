@@ -2,20 +2,27 @@ import React from 'react';
 import SearchWorker from '../workers/search.worker'
 import { useDebouncedCallback } from 'use-debounce';
 import Card from './Card';
+import { useDatabase } from '../context/database';
 
 export default function Cards({ query }) {
+  const database = useDatabase();
+
   const searchWorker = React.useRef(null);
   if (!searchWorker.current) {
     searchWorker.current = new SearchWorker()
   }
 
+  React.useEffect(() => {
+    if (Object.keys(database).length > 0) {
+      searchWorker.current.postMessage(database);
+    }
+  }, [database])
+
   const [pagesLoaded, setPagesLoaded] = React.useState(1);
 
   const [results, setResults] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
   const searchWorkerCallback = React.useCallback(event => {
     setResults(event.data)
-    setLoading(false)
     setPagesLoaded(1)
   }, [])
 
@@ -29,10 +36,7 @@ export default function Cards({ query }) {
     return () => searchWorker.current.removeEventListener('message', searchWorkerCallback)
   }, [])
 
-  React.useEffect(() => {
-    setLoading(true);
-    queryCallback.callback(query)
-  }, [query])
+  React.useEffect(() => queryCallback.callback(query), [query])
 
   return (
     <div>

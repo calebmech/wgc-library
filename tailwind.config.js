@@ -3,7 +3,10 @@ module.exports = {
   darkMode: "class",
   theme: {},
   variants: {
-    extend: {},
+    extend: {
+      opacity: ["disabled"],
+      cursor: ["disabled"],
+    },
   },
   plugins: [],
 };
