@@ -1,6 +1,6 @@
 import { Box, Heading, IconButton } from '@chakra-ui/react';
 import { useBookBag } from '../context/bookBag';
-import useIsMobile from '../hooks/useIsMobile';
+import { useIsMobile } from '../hooks/useIsMobile';
 import BagIcon from './icons/BagIcon';
 import Image from 'next/image';
 

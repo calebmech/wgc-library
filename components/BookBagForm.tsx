@@ -62,50 +62,48 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
   };
 
   return (
-    <Box as="form" width="full">
-      <VStack mt={6}>
-        <InputGroup>
-          <InputLeftElement pointerEvents="none" children={<UserIconSm fill={theme.colors.gray[300]} />} />
+    <VStack as="form" width="full">
+      <InputGroup>
+        <InputLeftElement pointerEvents="none" children={<UserIconSm fill={theme.colors.gray[500]} />} />
 
-          <Input
-            type="text"
-            placeholder="Full name"
-            isRequired
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputLeftElement pointerEvents="none" children={<AtSymbolIconSm fill={theme.colors.gray[300]} />} />
+        <Input
+          type="text"
+          placeholder="Full name"
+          isRequired
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+        />
+      </InputGroup>
+      <InputGroup>
+        <InputLeftElement pointerEvents="none" children={<AtSymbolIconSm fill={theme.colors.gray[500]} />} />
 
-          <Input
-            type="email"
-            placeholder="Email"
-            isRequired
-            // isInvalid={
-            //   email.length > 0 &&
-            //   !RegExp(
-            //     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            //   ).test(email)
-            // }
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </InputGroup>
+        <Input
+          type="email"
+          placeholder="Email"
+          isRequired
+          // isInvalid={
+          //   email.length > 0 &&
+          //   !RegExp(
+          //     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          //   ).test(email)
+          // }
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+      </InputGroup>
 
-        <Button
-          type="submit"
-          disabled={requesting || books.length === 0 || name.trim().length === 0}
-          onClick={handleBookRequest}
-          isLoading={requesting}
-          width="100%"
-          colorScheme="blue"
-          leftIcon={<ClipboardListIconSm />}
-        >
-          <span>Request books</span>
-        </Button>
-      </VStack>
-    </Box>
+      <Button
+        type="submit"
+        disabled={requesting || books.length === 0 || name.trim().length === 0}
+        onClick={handleBookRequest}
+        isLoading={requesting}
+        width="100%"
+        colorScheme="blue"
+        leftIcon={<ClipboardListIconSm />}
+      >
+        <span>Request books</span>
+      </Button>
+    </VStack>
   );
 };
 

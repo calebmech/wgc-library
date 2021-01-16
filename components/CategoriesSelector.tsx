@@ -19,7 +19,7 @@ const CategoriesSelector = ({
 
   return (
     <Select value={category} onChange={(event) => setCategory(event.target.value)} background="white">
-      <option value="">Select a category</option>
+      <option value="">All categories</option>
       {categories.map((category) => (
         <option value={category} key={category}>
           {category}

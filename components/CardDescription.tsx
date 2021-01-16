@@ -33,10 +33,10 @@ const CardDescription = ({
       )}
       {expanded && (
         <Wrap my={3} spacing={2}>
-          {book.infoLink && (
+          {book.previewLink && (
             <WrapItem>
               <Tooltip label="Google Books">
-                <Link href={book.infoLink} lineHeight="0">
+                <Link href={book.previewLink} lineHeight="0" target="_blank">
                   <IconButton aria-label="Google icon" icon={<GoogleIcon height="14" />} size="xs" />
                 </Link>
               </Tooltip>

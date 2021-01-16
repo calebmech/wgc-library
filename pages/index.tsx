@@ -19,7 +19,7 @@ import CategoriesSelector from '../components/CategoriesSelector';
 import Header from '../components/Header';
 import BookBagProvider from '../context/bookBag';
 import DatabaseProvider from '../context/database';
-import useIsMobile from '../hooks/useIsMobile';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { Kind } from '../types';
 
 const LazyCards = dynamic(() => import('../components/Cards'), {
@@ -85,7 +85,7 @@ export default function Home() {
                   onChange={(event) => setFormat(event.target.value)}
                   width="100%"
                 >
-                  <option value="">Select a format</option>
+                  <option value="">All formats</option>
                   <option value={Kind.BooksVolume}>Book</option>
                   <option value={Kind.CD}>CD</option>
                   <option value={Kind.DVD}>DVD</option>

@@ -17,7 +17,7 @@ const MobileBookBag = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
     <ModalContent>
       <ModalHeader>Book bag</ModalHeader>
       <ModalCloseButton />
-      <ModalBody minHeight="30vh">
+      <ModalBody>
         <BookBag />
       </ModalBody>
 

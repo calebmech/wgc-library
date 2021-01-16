@@ -2,7 +2,7 @@ import { Box, Button, Heading, HStack, Icon, Tag, Tooltip } from '@chakra-ui/rea
 import Image from 'next/image';
 import React from 'react';
 import { useBookBag } from '../context/bookBag';
-import useIsMobile from '../hooks/useIsMobile';
+import { useIsMobile, useIsSmallMobile } from '../hooks/useIsMobile';
 import { Kind, Volume } from '../types';
 import CardDescription from './CardDescription';
 import BagIcon from './icons/BagIconSm';
@@ -45,6 +45,7 @@ export default function Card({ volume, setCategory }: { volume: Volume; setCateg
   const [expanded, setExpanded] = React.useState(false);
 
   const isMobile = useIsMobile();
+  const isSmallMobile = useIsSmallMobile();
 
   const { addBookToBag, removeBookFromBag, books } = useBookBag();
 
@@ -99,7 +100,7 @@ export default function Card({ volume, setCategory }: { volume: Volume; setCateg
               </Button>
             )}
             <Button onClick={() => setExpanded(!expanded)} size="xs" ml={1} leftIcon={<InfoIcon height={16} />}>
-              {expanded ? 'Less' : 'More'} information
+              {expanded ? 'Less' : 'More'} {!isSmallMobile && 'information'}
             </Button>
             {!isMobile && volume.kind && (
               <Tooltip label={`Format: ${mapFormatToText(volume.kind)}`}>

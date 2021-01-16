@@ -103,10 +103,10 @@ export default function Cards({
         ))}
       </VStack>
 
-      {results.length > 0 && PAGE_SIZE * pagesLoaded > filteredResults.length && (
+      {category.length > 0 && results.length > 0 && PAGE_SIZE * pagesLoaded > filteredResults.length && (
         <Text mt={8} px={3} align="center">
           No {filteredResults.length > 0 && 'more'} items found.
-          {category.length > 0 && (
+          {!query.includes(category) && (
             <span>
               {' '}
               <Button
@@ -120,7 +120,7 @@ export default function Cards({
                 fontWeight="normal"
                 whiteSpace="break-spaces"
               >
-                Try clearing the category filter and searching for it instead.
+                Click here for additional similar results.
               </Button>
             </span>
           )}
