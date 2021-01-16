@@ -1,0 +1,89 @@
+import { Box, Button, Input, InputGroup, InputLeftElement, theme, useTheme, VStack } from '@chakra-ui/react';
+import React from 'react';
+import { useBookBag } from '../context/bookBag';
+import AtSymbolIconSm from './icons/AtSymbolIconSm';
+import ClipboardListIconSm from './icons/ClipboardListIconSm';
+import UserIconSm from './icons/UserIconSm';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { useDatabase } from '../context/database';
+import { RequestBody } from '../pages/api/sendEmail';
+
+const BookBagForm = ({}) => {
+  const { books, clearBag } = useBookBag();
+  const database = useDatabase();
+
+  const [name, setName] = useLocalStorage<string>('name', '');
+  const [email, setEmail] = useLocalStorage<string>('email', '');
+
+  const theme = useTheme();
+
+  const [requesting, setRequesting] = React.useState(false);
+
+  const handleBookRequest = () => {
+    const booksWithInformation = books.map((key) => database[key]);
+
+    setRequesting(true);
+
+    const body: RequestBody = { name, email, books: booksWithInformation };
+
+    fetch('/api/sendEmail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }).then(() => {
+      clearBag();
+      setRequesting(false);
+    });
+  };
+
+  return (
+    <Box as="form" width="full">
+      <VStack mt={6}>
+        <InputGroup>
+          <InputLeftElement pointerEvents="none" children={<UserIconSm fill={theme.colors.gray[300]} />} />
+
+          <Input
+            type="text"
+            placeholder="Full name"
+            isRequired
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+        </InputGroup>
+        <InputGroup>
+          <InputLeftElement pointerEvents="none" children={<AtSymbolIconSm fill={theme.colors.gray[300]} />} />
+
+          <Input
+            type="email"
+            placeholder="Email"
+            isRequired
+            // isInvalid={
+            //   email.length > 0 &&
+            //   !RegExp(
+            //     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            //   ).test(email)
+            // }
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+        </InputGroup>
+
+        <Button
+          type="submit"
+          disabled={requesting || books.length === 0 || name.trim().length === 0}
+          onClick={handleBookRequest}
+          isLoading={requesting}
+          width="100%"
+          colorScheme="blue"
+          leftIcon={<ClipboardListIconSm />}
+        >
+          <span>Request books</span>
+        </Button>
+      </VStack>
+    </Box>
+  );
+};
+
+export default BookBagForm;
