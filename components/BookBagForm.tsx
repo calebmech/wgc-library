@@ -1,4 +1,4 @@
-import { Box, Button, Input, InputGroup, InputLeftElement, theme, useTheme, VStack } from '@chakra-ui/react';
+import { Box, Button, Input, InputGroup, InputLeftElement, theme, useTheme, useToast, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { useBookBag } from '../context/bookBag';
 import AtSymbolIconSm from './icons/AtSymbolIconSm';
@@ -8,7 +8,7 @@ import useLocalStorage from '../hooks/useLocalStorage';
 import { useDatabase } from '../context/database';
 import { RequestBody } from '../pages/api/sendEmail';
 
-const BookBagForm = ({}) => {
+const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
   const { books, clearBag } = useBookBag();
   const database = useDatabase();
 
@@ -16,6 +16,7 @@ const BookBagForm = ({}) => {
   const [email, setEmail] = useLocalStorage<string>('email', '');
 
   const theme = useTheme();
+  const toast = useToast();
 
   const [requesting, setRequesting] = React.useState(false);
 
@@ -32,10 +33,32 @@ const BookBagForm = ({}) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    }).then(() => {
-      clearBag();
-      setRequesting(false);
-    });
+    })
+      .then(() => {
+        if (onSubmit) {
+          onSubmit();
+        }
+        clearBag();
+        setRequesting(false);
+        toast({
+          title:
+            books.length === 1
+              ? `1 item was requested successfully!`
+              : `${books.length} items were requested successfully!`,
+          description: `A receipt was sent to ${email}`,
+          status: 'success',
+          isClosable: true,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        setRequesting(false);
+        toast({
+          title: `An unexpected error occurred, please try again.`,
+          status: 'error',
+          isClosable: true,
+        });
+      });
   };
 
   return (

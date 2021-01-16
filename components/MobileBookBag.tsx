@@ -22,7 +22,7 @@ const MobileBookBag = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
       </ModalBody>
 
       <ModalFooter>
-        <BookBagForm />
+        <BookBagForm onSubmit={onClose} />
       </ModalFooter>
     </ModalContent>
   </Modal>
