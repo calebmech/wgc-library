@@ -1,6 +1,6 @@
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Volume } from '../../types';
+import { Book, Volume } from '../../types';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -8,6 +8,10 @@ export interface RequestBody {
   name: string;
   email: string;
   books: Volume[];
+}
+
+function formatBook(book: Book): string {
+  return `${book.title}`;
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -39,7 +43,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const msg: MailDataRequired = {
-    to: email, // Change to your recipient
+    to: 'cmech1@gmail.com', // Change to your recipient
     replyTo: email,
     from: 'test@example.com', // Change to your verified sender
     subject: `${books.length} book${books.length == 1 ? '' : 's'} have been requested by ${name}`,
