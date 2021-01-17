@@ -14,7 +14,7 @@ export default function BookBag() {
   return (
     <Box flex="1" overflowY="auto" height="40vh">
       {books.length === 0 && <p>There are no items in your bag.</p>}
-      <UnorderedList ml="0" width={!isMobile ? '29vw' : undefined}>
+      <UnorderedList ml="0" width={!isMobile ? '28vw' : undefined}>
         {Object.keys(database).length > 0 &&
           books.map((key) => {
             const book = database[key]?.volumeInfo;

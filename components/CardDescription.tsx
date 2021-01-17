@@ -25,11 +25,9 @@ const CardDescription = ({
   return (
     <>
       {(showShortDescription || expanded) && (
-        <Text
-          isTruncated={!expanded}
-          noOfLines={expanded ? undefined : 2}
-          dangerouslySetInnerHTML={{ __html: book.description ?? '' }}
-        />
+        <Text isTruncated={!expanded} noOfLines={expanded ? undefined : 2}>
+          {book.description}
+        </Text>
       )}
       {expanded && (
         <Wrap my={3} spacing={2}>

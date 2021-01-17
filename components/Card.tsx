@@ -53,7 +53,7 @@ export default function Card({ volume, setCategory }: { volume: Volume; setCateg
     <Box as="article" width="full" borderRadius="lg" borderWidth={1} background="white">
       <Box width="full" display="flex">
         {imageLinks && (
-          <Box position="relative" height="auto" flex="none" width={24} background="gray.100">
+          <Box position="relative" height="auto" flex="none" width="20%" maxWidth={24} background="gray.100">
             <Image src={imageLinks.thumbnail} layout="fill" objectFit="contain" />
           </Box>
         )}

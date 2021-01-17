@@ -20,7 +20,8 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
 
   const [requesting, setRequesting] = React.useState(false);
 
-  const handleBookRequest = () => {
+  const handleBookRequest = (event: any) => {
+    event.preventDefault();
     const booksWithInformation = books.map((key) => database[key]);
 
     setRequesting(true);
