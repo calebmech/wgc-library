@@ -1,16 +1,26 @@
-import { Box, Heading, IconButton } from '@chakra-ui/react';
+import { Box, Button, Heading, IconButton, useDisclosure } from '@chakra-ui/react';
 import { useBookBag } from '../context/bookBag';
 import { useIsMobile } from '../hooks/useIsMobile';
 import BagIcon from './icons/BagIcon';
 import Image from 'next/image';
+import QuestionMarkCircleIcon from './icons/QuestionMarkCircleIcon';
+import React from 'react';
+import FAQ from './FAQ';
 
 export default function Header({ bagOpen, setBagOpen }: { bagOpen: boolean; setBagOpen: (open: boolean) => void }) {
   const { books } = useBookBag();
   const isMobile = useIsMobile();
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
   return (
     <Box as="header" display="flex" justifyContent="space-between">
-      <Box flex="1" />
+      <Box flex="1">
+        <Button leftIcon={<QuestionMarkCircleIcon height={20} />} onClick={onOpen} variant="ghost">
+          FAQ
+        </Button>
+        {/* <IconButton variant="ghost" aria-label="FAQ" icon={<QuestionMarkCircleIcon />} onClick={onOpen} /> */}
+        <FAQ isOpen={isOpen} onClose={onClose} />
+      </Box>
       <Heading as="h1" maxW="44" margin="auto" flex="1">
         <Image src="/logo.png" height="258" width="452" layout="responsive" />
         {/* WGC Library */}

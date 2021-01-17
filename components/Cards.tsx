@@ -7,7 +7,7 @@ import { Volume } from '../types';
 import { SearchWorker } from '../workers';
 import Card from './Card';
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 7;
 
 export default function Cards({
   query,
@@ -83,7 +83,7 @@ export default function Cards({
   React.useEffect(() => {
     var options = {
       root: null,
-      rootMargin: '80px',
+      rootMargin: '200px',
     };
     // initialize IntersectionObserver
     // and attaching to Load More div
@@ -93,10 +93,16 @@ export default function Cards({
         setPagesLoaded((page) => page + 1);
       }
     }, options);
-    if (loaderEl.current && !isLoading) {
+    if (loaderEl.current) {
       observer.observe(loaderEl.current);
     }
-  }, [isLoading]);
+
+    return () => {
+      if (loaderEl.current) {
+        observer.unobserve(loaderEl.current);
+      }
+    };
+  }, []);
 
   const filteredResults = React.useMemo(() => {
     const formatMatchingResults = format === '' ? results : results.filter((volume) => volume.kind === format);

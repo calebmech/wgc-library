@@ -1,5 +1,6 @@
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { mapFormatToText } from '../../components/Card';
 import { Book, Volume } from '../../types';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
@@ -7,11 +8,8 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 export interface RequestBody {
   name: string;
   email: string;
+  additionalInformation?: string;
   books: Volume[];
-}
-
-function formatBook(book: Book): string {
-  return `${book.title}`;
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -27,7 +25,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const { books, name, email } = req.body as RequestBody;
+  const { books, name, email, additionalInformation } = req.body as RequestBody;
 
   if (
     !Array.isArray(books) ||
@@ -47,7 +45,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     replyTo: email,
     from: 'test@example.com', // Change to your verified sender
     subject: `${books.length} book${books.length == 1 ? '' : 's'} have been requested by ${name}`,
-    text: `${name} has requested the following books: ${books.join(', ')}`,
+    text: ` ${books.join(', ')}`,
+    html: `
+      <p>${name} (${email}) has requested the following books:</p>
+      <ul>
+        ${books.map((book) => {
+          return `<li>${book.volumeInfo.title}</li>`;
+        })}
+      </ul>
+      <h3>Additional information:</h3>
+      <p>${additionalInformation}</p>
+    `,
   };
 
   try {

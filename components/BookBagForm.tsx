@@ -1,4 +1,15 @@
-import { Box, Button, Input, InputGroup, InputLeftElement, theme, useTheme, useToast, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Textarea,
+  theme,
+  useTheme,
+  useToast,
+  VStack,
+} from '@chakra-ui/react';
 import React from 'react';
 import { useBookBag } from '../context/bookBag';
 import AtSymbolIconSm from './icons/AtSymbolIconSm';
@@ -8,12 +19,17 @@ import useLocalStorage from '../hooks/useLocalStorage';
 import { useDatabase } from '../context/database';
 import { RequestBody } from '../pages/api/sendEmail';
 
+const EmailRegExp = RegExp(
+  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+);
+
 const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
   const { books, clearBag } = useBookBag();
   const database = useDatabase();
 
   const [name, setName] = useLocalStorage<string>('name', '');
   const [email, setEmail] = useLocalStorage<string>('email', '');
+  const [additionalInformation, setAdditionalInformation] = useLocalStorage<string>('additionalInformation', '');
 
   const theme = useTheme();
   const toast = useToast();
@@ -26,7 +42,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
 
     setRequesting(true);
 
-    const body: RequestBody = { name, email, books: booksWithInformation };
+    const body: RequestBody = { name, email, additionalInformation, books: booksWithInformation };
 
     fetch('/api/sendEmail', {
       method: 'POST',
@@ -41,6 +57,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
         }
         clearBag();
         setRequesting(false);
+        setAdditionalInformation('');
         toast({
           title:
             books.length === 1
@@ -62,8 +79,11 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
       });
   };
 
+  const isEmailValid = EmailRegExp.test(email.trim());
+  const isValid = books.length > 0 && name.trim().length > 0 && isEmailValid;
+
   return (
-    <VStack as="form" width="full">
+    <VStack as="form" width="full" mt={4}>
       <InputGroup>
         <InputLeftElement pointerEvents="none" children={<UserIconSm fill={theme.colors.gray[500]} />} />
 
@@ -82,20 +102,21 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
           type="email"
           placeholder="Email"
           isRequired
-          // isInvalid={
-          //   email.length > 0 &&
-          //   !RegExp(
-          //     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          //   ).test(email)
-          // }
+          isInvalid={!isEmailValid}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
         />
       </InputGroup>
 
+      <Textarea
+        placeholder="Additional information"
+        value={additionalInformation}
+        onChange={(event) => setAdditionalInformation(event.target.value)}
+      />
+
       <Button
         type="submit"
-        disabled={requesting || books.length === 0 || name.trim().length === 0}
+        disabled={requesting || !isValid}
         onClick={handleBookRequest}
         isLoading={requesting}
         width="100%"
