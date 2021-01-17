@@ -19,7 +19,7 @@ import CategoriesSelector from '../components/CategoriesSelector';
 import Header from '../components/Header';
 import BookBagProvider from '../context/bookBag';
 import DatabaseProvider from '../context/database';
-import { useIsMobile } from '../hooks/useIsMobile';
+import { useIsDesktop, useIsMobile } from '../hooks/useIsMobile';
 import { Kind } from '../types';
 
 const LazyCards = dynamic(() => import('../components/Cards'), {
@@ -52,6 +52,7 @@ export default function Home() {
   const theme = useTheme();
 
   const isMobile = useIsMobile();
+  const isDesktop = useIsDesktop();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -101,9 +102,7 @@ export default function Home() {
               format={format}
             />
           </Container>
-          {isMobile ? (
-            <LazyMobileBookBag isOpen={isOpen} onClose={onClose} />
-          ) : (
+          {isDesktop ? (
             <Container
               flex="0 0 33vw"
               mx={0}
@@ -120,6 +119,8 @@ export default function Home() {
             >
               <LazyDesktopBookBag />
             </Container>
+          ) : (
+            <LazyMobileBookBag isOpen={isOpen} onClose={onClose} />
           )}
         </Flex>
       </BookBagProvider>
