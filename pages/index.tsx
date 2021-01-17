@@ -79,7 +79,7 @@ export default function Home() {
                 )}
               </InputGroup>
               <HStack spacing={2} width="100%">
-                <CategoriesSelector category={category} setCategory={setCategory} />
+                {' '}
                 <Select
                   background="white"
                   value={format}
@@ -91,6 +91,7 @@ export default function Home() {
                   <option value={Kind.CD}>CD</option>
                   <option value={Kind.DVD}>DVD</option>
                 </Select>
+                <CategoriesSelector category={category} setCategory={setCategory} format={format} />
               </HStack>
             </VStack>
 

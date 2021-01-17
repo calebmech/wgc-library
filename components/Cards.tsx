@@ -111,9 +111,6 @@ export default function Cards({
     return categoryMatchingResults;
   }, [category, format, results]);
 
-  // const filteredResults =
-  //   category === '' ? results : results.filter((book) => (book.categories ?? []).find((c) => c.startsWith(category)));
-  console.log({ isLoading, initialLoad });
   return (
     <div>
       {!isLoading && (
