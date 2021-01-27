@@ -1,4 +1,4 @@
-import { Box, Button, Heading, IconButton, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Heading, IconButton, Tooltip, useDisclosure } from '@chakra-ui/react';
 import { useBookBag } from '../context/bookBag';
 import { useIsMobile } from '../hooks/useIsMobile';
 import BagIcon from './icons/BagIcon';
@@ -15,9 +15,11 @@ export default function Header({ bagOpen, setBagOpen }: { bagOpen: boolean; setB
   return (
     <Box as="header" display="flex" justifyContent="space-between">
       <Box flex="1">
-        <Button leftIcon={<QuestionMarkCircleIcon height={20} />} onClick={onOpen} variant="ghost">
-          FAQ
-        </Button>
+        <Tooltip label="Frequently asked questions">
+          <Button leftIcon={<QuestionMarkCircleIcon height={20} />} onClick={onOpen} variant="ghost">
+            FAQ
+          </Button>
+        </Tooltip>
         {/* <IconButton variant="ghost" aria-label="FAQ" icon={<QuestionMarkCircleIcon />} onClick={onOpen} /> */}
         <FAQ isOpen={isOpen} onClose={onClose} />
       </Box>

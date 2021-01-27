@@ -38,7 +38,15 @@ export function mapFormatToText(format?: Kind) {
   }
 }
 
-export default function Card({ volume, setCategory }: { volume: Volume; setCategory: (category: string) => void }) {
+export default function Card({
+  volume,
+  setCategory,
+  setQuery,
+}: {
+  volume: Volume;
+  setCategory: (category: string) => void;
+  setQuery: (query: string) => void;
+}) {
   const book = volume.volumeInfo;
   const { title, subtitle, authors, description, imageLinks, categories = [], publishedDate, pageCount } = book;
 
@@ -61,11 +69,19 @@ export default function Card({ volume, setCategory }: { volume: Volume; setCateg
         <Box py={3} px={5} overflow="hidden">
           <Box as="header" mb={1}>
             <Heading as="h1" size="md" fontSize="1.125em" fontWeight="semibold" mb={1}>
-              {title}
+              {title.trim()}
               {subtitle && `: ${subtitle}`}
             </Heading>
-            <Heading as="h2" size="sm" color="gray.600" fontWeight="500">
-              {authors && authors.join(', ')}
+            <Heading as="h2" size="sm" color="gray.600">
+              {authors &&
+                authors.map((author, i) => (
+                  <React.Fragment key={i}>
+                    <Button variant="link" onClick={() => setQuery(author)} fontWeight="500" color="gray.600">
+                      {author}
+                    </Button>
+                    {i < authors.length - 1 && ', '}
+                  </React.Fragment>
+                ))}
             </Heading>
           </Box>
 

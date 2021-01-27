@@ -7,7 +7,7 @@ import { Volume } from '../types';
 import { SearchWorker } from '../workers';
 import Card from './Card';
 
-const PAGE_SIZE = 7;
+const PAGE_SIZE = 8;
 
 export default function Cards({
   query,
@@ -65,7 +65,7 @@ export default function Cards({
 
   const queryCallback = useDebouncedCallback((query) => {
     searchWorker.current?.postMessage(query);
-  }, 100);
+  }, 300);
 
   React.useEffect(() => {
     searchWorker.current?.addEventListener('message', searchWorkerCallback);
@@ -83,7 +83,7 @@ export default function Cards({
   React.useEffect(() => {
     var options = {
       root: null,
-      rootMargin: '200px',
+      rootMargin: '100px',
     };
     // initialize IntersectionObserver
     // and attaching to Load More div
@@ -122,7 +122,7 @@ export default function Cards({
       {!isLoading && (
         <VStack>
           {filteredResults.slice(0, PAGE_SIZE * pagesLoaded).map((book) => (
-            <Card volume={book} key={book.volumeInfo.key} setCategory={setCategory} />
+            <Card volume={book} key={book.volumeInfo.key} setCategory={setCategory} setQuery={setQuery} />
           ))}
         </VStack>
       )}

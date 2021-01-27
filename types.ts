@@ -11,6 +11,7 @@ export interface Volume {
   searchInfo?: SearchInfo;
   error?: TopLevelError;
   layerInfo?: LayerInfo;
+  shelf?: string;
 }
 
 export interface AccessInfo {

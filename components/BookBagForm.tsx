@@ -79,7 +79,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
       });
   };
 
-  const isEmailValid = EmailRegExp.test(email.trim());
+  const isEmailValid = email === '' || EmailRegExp.test(email.trim());
   const isValid = books.length > 0 && name.trim().length > 0 && isEmailValid;
 
   return (

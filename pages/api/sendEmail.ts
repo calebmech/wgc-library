@@ -1,7 +1,9 @@
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { mapFormatToText } from '../../components/Card';
-import { Book, Volume } from '../../types';
+import { Volume, Type } from '../../types';
+
+const libraryEmail = 'library@winonagospelchurch.org';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -40,29 +42,115 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const msg: MailDataRequired = {
-    to: 'cmech1@gmail.com', // Change to your recipient
-    replyTo: email,
-    from: 'test@example.com', // Change to your verified sender
-    subject: `${books.length} book${books.length == 1 ? '' : 's'} have been requested by ${name}`,
-    text: ` ${books.join(', ')}`,
+  const requesterMsg: MailDataRequired = {
+    to: { name, email },
+    from: {
+      email: libraryEmail,
+      name: 'Winona Gospel Church Library',
+    },
+    subject: `Your request of ${books.length} item${books.length == 1 ? '' : 's'} has been received!`,
     html: `
-      <p>${name} (${email}) has requested the following books:</p>
+      <p>Thank you for using the Winona Gospel Church library website!</p>      
+
+      <p>You requested the following item${books.length == 1 ? '' : 's'}:</p>
+
       <ul>
-        ${books.map((book) => {
-          return `<li>${book.volumeInfo.title}</li>`;
-        })}
+        ${books
+          .map((book) => {
+            const { title, subtitle, authors } = book.volumeInfo;
+
+            return `
+            <li>
+              ${title.trim()} ${subtitle?.length ? `: ${subtitle.trim()}` : ''} ${
+              authors?.length ? `(${authors.join(', ')})` : ''
+            }
+            </li>
+          `;
+          })
+          .join('\n')}
       </ul>
-      <h3>Additional information:</h3>
-      <p>${additionalInformation}</p>
+      ${
+        additionalInformation && additionalInformation.trim().length > 0
+          ? `
+          <p>You also left the note:</p>
+          <blockquote>${additionalInformation}</blockquote>
+        `
+          : ''
+      }
+
+      <p>
+        You should receive an email within a week to confirm your items are ready for pickup.
+        If you haven’t heard from us in that time, please leave a message at the church office (905-643-3116, or library@winonagospelchurch.org).
+      </p>
+    `,
+  };
+
+  const libraryMsg: MailDataRequired = {
+    to: {
+      name: 'Winona Gospel Church Library',
+      email: 'cmech1@gmail.com',
+    }, // Change to your recipient
+    replyTo: email,
+    from: {
+      email: libraryEmail,
+      name: 'Library Website',
+    },
+    subject: `${name} has requested ${books.length} item${books.length == 1 ? '' : 's'}`,
+    html: `
+      <p>${name} (${email}) has requested the following item${books.length == 1 ? '' : 's'}:</p>
+      <ul>
+        ${books
+          .map((book) => {
+            const { title, subtitle, authors } = book.volumeInfo;
+
+            return `
+            <li>
+              ${title.trim()} ${subtitle?.length ? `: ${subtitle.trim()}` : ''} ${
+              authors?.length ? `(${authors.join(', ')})` : ''
+            }
+
+              <ul>
+                <li>Format: ${mapFormatToText(book.kind)}</li>
+                ${book.shelf ? `<li>Shelf: ${book.shelf}</li>` : ''}
+                ${(() => {
+                  const isbn = book.volumeInfo.industryIdentifiers?.find((id) => id.type === Type.Isbn13);
+
+                  if (isbn) {
+                    return `<li>ISBN: ${isbn.identifier}</li>`;
+                  }
+
+                  return '';
+                })()}
+              </ul>
+            </li>
+          `;
+          })
+          .join('\n')}
+      </ul>
+      ${
+        additionalInformation && additionalInformation.trim().length > 0
+          ? `<h3>Additional information:</h3>
+        <blockquote>${additionalInformation}</blockquote>`
+          : ''
+      }
+
+      <hr />
+
+      <p>
+        <i>
+          Note: shelf numbers are given starting from the left-bottom-most shelf to the right-top-most shelf.
+          For example, 9-5 would be the 9th shelf from the left and 5th shelf from the bottom (aka Gino's Picks).
+        </i>
+      </p>
     `,
   };
 
   try {
-    await sgMail.send(msg);
+    await sgMail.send(libraryMsg);
+    await sgMail.send(requesterMsg);
 
     res.statusCode = 200;
-    res.json({ text: 'Email sent' });
+    res.json({ text: 'Emails sent' });
   } catch (error) {
     console.error(error);
     res.statusCode = 500;
