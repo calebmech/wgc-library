@@ -10,7 +10,6 @@ import {
   Select,
   Spinner,
   useDisclosure,
-  useTheme,
   VStack,
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
@@ -19,7 +18,7 @@ import CategoriesSelector from '../components/CategoriesSelector';
 import Header from '../components/Header';
 import BookBagProvider from '../context/bookBag';
 import DatabaseProvider from '../context/database';
-import { useIsDesktop, useIsMobile } from '../hooks/useIsMobile';
+import { useIsDesktop } from '../hooks/useIsMobile';
 import { Kind } from '../types';
 
 const LazyCards = dynamic(() => import('../components/Cards'), {
@@ -49,9 +48,7 @@ export default function Home() {
   const [category, setCategory] = React.useState('');
   const [format, setFormat] = React.useState('');
 
-  const theme = useTheme();
 
-  const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
