@@ -78,10 +78,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           : ''
       }
 
-      <p>
-        You should receive an email within a week to confirm your items are ready for pickup.
-        If you haven’t heard from us in that time, please leave a message at the church office (905-643-3116, or library@winonagospelchurch.org).
-      </p>
+      <p>You should receive an email within a week to confirm your items are ready for pickup. If you haven’t heard from us in that time, please leave a message at the church office (905-643-3116, or library@winonagospelchurch.org).</p>
     `,
   };
 
@@ -136,12 +133,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       <hr />
 
-      <p>
-        <i>
-          Note: shelf numbers are given starting from the left-bottom-most shelf to the right-top-most shelf.
-          For example, 9-5 would be the 9th shelf from the left and 5th shelf from the bottom (aka Gino's Picks).
-        </i>
-      </p>
+      <p><i>Note: shelf numbers are given starting from the left-bottom-most shelf to the right-top-most shelf. For example, 9-5 would be the 9th shelf from the left and 5th shelf from the bottom (aka Gino's Picks).</i></p>
     `,
   };
 

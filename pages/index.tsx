@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   CloseButton,
   Container,
   Flex,
@@ -48,7 +49,6 @@ export default function Home() {
   const [category, setCategory] = React.useState('');
   const [format, setFormat] = React.useState('');
 
-
   const isDesktop = useIsDesktop();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -90,6 +90,20 @@ export default function Home() {
                 </Select>
                 <CategoriesSelector category={category} setCategory={setCategory} format={format} />
               </HStack>
+              {(format.length || category.length) && (
+                <Box w="full" textAlign="center">
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => {
+                      setCategory('');
+                      setFormat('');
+                    }}
+                  >
+                    Clear filters
+                  </Button>
+                </Box>
+              )}
             </VStack>
 
             <LazyCards
