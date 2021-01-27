@@ -21,6 +21,7 @@ import BookBagProvider from '../context/bookBag';
 import DatabaseProvider from '../context/database';
 import { useIsDesktop } from '../hooks/useIsMobile';
 import { Kind } from '../types';
+import { useRouter } from 'next/router';
 
 const LazyCards = dynamic(() => import('../components/Cards'), {
   loading: () => (
@@ -44,10 +45,38 @@ const LazyDesktopBookBag = dynamic(() => import('../components/DesktopBookBag'),
   ssr: false,
 });
 
+const getQueryValue = (queryValue: string | string[] | undefined): string => {
+  return Array.isArray(queryValue) ? queryValue[0] : queryValue ?? '';
+};
+
+const createQueryObject = (query: { [key: string]: string }): { [key: string]: string } => {
+  const entries = Object.entries(query);
+
+  return Object.fromEntries(entries.filter(([key, value]) => value.trim().length > 0));
+};
+
 export default function Home() {
-  const [query, setQuery] = React.useState('');
-  const [category, setCategory] = React.useState('');
-  const [format, setFormat] = React.useState('');
+  const router = useRouter();
+
+  const [query, setQuery] = React.useState(getQueryValue(router.query.q));
+  const [category, setCategory] = React.useState(getQueryValue(router.query.category));
+  const [format, setFormat] = React.useState(getQueryValue(router.query.format));
+
+  React.useEffect(() => {
+    setQuery(getQueryValue(router.query.q));
+    setCategory(getQueryValue(router.query.category));
+    setFormat(getQueryValue(router.query.format));
+  }, [router.query]);
+
+  React.useEffect(() => {
+    const id = setTimeout(() => {
+      router.push({ query: createQueryObject({ ...router.query, q: query, category, format }) }, undefined, {
+        shallow: true,
+      });
+    }, 1000);
+
+    return () => clearTimeout(id);
+  }, [query, category, format]);
 
   const isDesktop = useIsDesktop();
 
