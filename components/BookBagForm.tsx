@@ -1,23 +1,22 @@
 import {
-  Box,
   Button,
   Input,
   InputGroup,
   InputLeftElement,
   Textarea,
-  theme,
+  useColorModeValue,
   useTheme,
   useToast,
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';
 import { useBookBag } from '../context/bookBag';
+import { useDatabase } from '../context/database';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { RequestBody } from '../pages/api/sendEmail';
 import AtSymbolIconSm from './icons/AtSymbolIconSm';
 import ClipboardListIconSm from './icons/ClipboardListIconSm';
 import UserIconSm from './icons/UserIconSm';
-import useLocalStorage from '../hooks/useLocalStorage';
-import { useDatabase } from '../context/database';
-import { RequestBody } from '../pages/api/sendEmail';
 
 const EmailRegExp = RegExp(
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -92,6 +91,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
           placeholder="Full name"
           isRequired
           value={name}
+          background={useColorModeValue('white', 'gray.700')}
           onChange={(event) => setName(event.target.value)}
         />
       </InputGroup>
@@ -104,6 +104,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
           isRequired
           isInvalid={!isEmailValid}
           value={email}
+          background={useColorModeValue('white', 'gray.700')}
           onChange={(event) => setEmail(event.target.value)}
         />
       </InputGroup>
@@ -111,6 +112,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
       <Textarea
         placeholder="Additional information"
         value={additionalInformation}
+        background={useColorModeValue('white', 'gray.700')}
         onChange={(event) => setAdditionalInformation(event.target.value)}
       />
 

@@ -10,6 +10,7 @@ import {
   InputRightElement,
   Select,
   Spinner,
+  useColorModeValue,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
@@ -85,7 +86,7 @@ export default function Home() {
   return (
     <DatabaseProvider>
       <BookBagProvider>
-        <Flex background="gray.50" minHeight="100%">
+        <Flex background={useColorModeValue('gray.50', 'gray.800')} minHeight="100%">
           <Container maxW="768px" mt={3}>
             <Header bagOpen={isOpen} setBagOpen={onOpen} />
 
@@ -96,7 +97,7 @@ export default function Home() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   size="lg"
-                  background="white"
+                  background={useColorModeValue('white', 'gray.700')}
                 />
                 {query.length > 0 && (
                   <InputRightElement>
@@ -107,7 +108,7 @@ export default function Home() {
               <HStack spacing={2} width="100%">
                 {' '}
                 <Select
-                  background="white"
+                  background={useColorModeValue('white', 'gray.700')}
                   value={format}
                   onChange={(event) => setFormat(event.target.value)}
                   width="100%"
@@ -149,7 +150,7 @@ export default function Home() {
               mx={0}
               p={7}
               w="full"
-              background="white"
+              background={useColorModeValue('white', 'gray.900')}
               top="0"
               position="sticky"
               minWidth="max-content"

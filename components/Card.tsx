@@ -1,4 +1,4 @@
-import { Box, Button, Heading, HStack, Icon, Tag, Tooltip } from '@chakra-ui/react';
+import { Box, Button, Heading, HStack, Icon, Tag, Tooltip, useColorModeValue } from '@chakra-ui/react';
 import Image from 'next/image';
 import React from 'react';
 import { useBookBag } from '../context/bookBag';
@@ -58,10 +58,23 @@ export default function Card({
   const { addBookToBag, removeBookFromBag, books } = useBookBag();
 
   return (
-    <Box as="article" width="full" borderRadius="lg" borderWidth={1} background="white">
+    <Box
+      as="article"
+      width="full"
+      borderRadius="lg"
+      borderWidth={1}
+      background={useColorModeValue('white', 'gray.700')}
+    >
       <Box width="full" display="flex">
         {imageLinks && (
-          <Box position="relative" height="auto" flex="none" width="20%" maxWidth={24} background="gray.100">
+          <Box
+            position="relative"
+            height="auto"
+            flex="none"
+            width="20%"
+            maxWidth={24}
+            background={useColorModeValue('gray.100', 'gray.800')}
+          >
             <Image src={imageLinks.thumbnail} layout="fill" objectFit="contain" />
           </Box>
         )}
@@ -72,11 +85,16 @@ export default function Card({
               {title.trim()}
               {subtitle && `: ${subtitle}`}
             </Heading>
-            <Heading as="h2" size="sm" color="gray.600">
+            <Heading as="h2" size="sm">
               {authors &&
                 authors.map((author, i) => (
                   <React.Fragment key={i}>
-                    <Button variant="link" onClick={() => setQuery(author)} fontWeight="500" color="gray.600">
+                    <Button
+                      variant="link"
+                      onClick={() => setQuery(author)}
+                      fontWeight="500"
+                      color={useColorModeValue('gray.600', 'gray.400')}
+                    >
                       {author}
                     </Button>
                     {i < authors.length - 1 && ', '}

@@ -1,11 +1,11 @@
-import { Box, Button, Heading, IconButton, Tooltip, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Heading, IconButton, Tooltip, useColorModeValue, useDisclosure } from '@chakra-ui/react';
+import Image from 'next/image';
+import React from 'react';
 import { useBookBag } from '../context/bookBag';
 import { useIsMobile } from '../hooks/useIsMobile';
-import BagIcon from './icons/BagIcon';
-import Image from 'next/image';
-import QuestionMarkCircleIcon from './icons/QuestionMarkCircleIcon';
-import React from 'react';
 import FAQ from './FAQ';
+import BagIcon from './icons/BagIcon';
+import QuestionMarkCircleIcon from './icons/QuestionMarkCircleIcon';
 
 export default function Header({ bagOpen, setBagOpen }: { bagOpen: boolean; setBagOpen: (open: boolean) => void }) {
   const { books } = useBookBag();
@@ -20,19 +20,25 @@ export default function Header({ bagOpen, setBagOpen }: { bagOpen: boolean; setB
             FAQ
           </Button>
         </Tooltip>
-        {/* <IconButton variant="ghost" aria-label="FAQ" icon={<QuestionMarkCircleIcon />} onClick={onOpen} /> */}
         <FAQ isOpen={isOpen} onClose={onClose} />
       </Box>
-      <Heading as="h1" maxW="44" margin="auto" flex="1">
-        <Image src="/logo.png" height="258" width="452" layout="responsive" />
-        {/* WGC Library */}
+      <Heading
+        as="h1"
+        maxW="calc(min(25%, 127px))"
+        margin={2}
+        ml={0}
+        flex="1"
+        filter={useColorModeValue('', 'invert()')}
+      >
+        <Image src="/logo.png" height="540" width="770" layout="responsive" />
       </Heading>
       <Box display="flex" flex="1" flexDir="column" justifyContent="top" alignItems="flex-end">
         {isMobile && (
           <Box position="relative">
             <IconButton
               aria-label="Book bag"
-              className="relative"
+              className="relative
+              "
               onClick={() => setBagOpen(!bagOpen)}
               icon={<BagIcon height="24" />}
               variant="ghost"

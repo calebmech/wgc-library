@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDatabase } from '../context/database';
-import { Select } from '@chakra-ui/react';
+import { Select, useColorModeValue } from '@chakra-ui/react';
 
 const CategoriesSelector = ({
   category,
@@ -32,7 +32,11 @@ const CategoriesSelector = ({
   }, [categories, format]);
 
   return (
-    <Select value={category} onChange={(event) => setCategory(event.target.value)} background="white">
+    <Select
+      value={category}
+      onChange={(event) => setCategory(event.target.value)}
+      background={useColorModeValue('white', 'gray.700')}
+    >
       <option value="">All categories</option>
       {categories.map((category) => (
         <option value={category} key={category}>

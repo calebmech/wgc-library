@@ -1,4 +1,4 @@
-import { HStack, IconButton, Box, Text, CloseButton } from '@chakra-ui/react';
+import { Box, CloseButton, HStack, Text, useColorModeValue } from '@chakra-ui/react';
 import Image from 'next/image';
 import { Book } from '../types';
 
@@ -16,7 +16,7 @@ const BookBagItem = ({ onRemove, book }: { book: Book; onRemove: () => void }) =
           {book.subtitle && `: ${book.subtitle}`}
         </Text>
         {book.authors && book.authors?.length > 0 && (
-          <Text isTruncated noOfLines={1} color="gray.600">
+          <Text isTruncated noOfLines={1} color={useColorModeValue('gray.600', 'gray.400')}>
             {book.authors?.join(', ') || '\xa0'}
           </Text>
         )}
