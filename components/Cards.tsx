@@ -1,13 +1,15 @@
 import { Box, Button, Spinner, Text, VStack } from '@chakra-ui/react';
+import algoliasearch from 'algoliasearch/lite';
 import React from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
-import { useDebouncedCallback } from 'use-debounce';
-import { useDatabase } from '../context/database';
 import { Volume } from '../types';
-import { SearchWorker } from '../workers';
 import Card from './Card';
 
 const PAGE_SIZE = 8;
+
+const searchClient = algoliasearch('WV458H32HP', '9238085c928f4a26733df80b8f0a9a9c');
+
+const index = searchClient.initIndex('wgc-library');
 
 export default function Cards({
   query,
@@ -15,70 +17,75 @@ export default function Cards({
   format,
   category,
   setCategory,
+  initialResults,
 }: {
   query: string;
   setQuery: (query: string) => void;
   format: string;
   category: string;
   setCategory: (category: string) => void;
+  initialResults: Volume[];
 }) {
-  const database = useDatabase();
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [initialLoad, setInitialLoad] = React.useState(false);
-
-  const searchWorker = React.useRef<Worker | null>(null);
-  if (!searchWorker.current) {
-    searchWorker.current = new SearchWorker();
-  }
-
-  React.useEffect(() => {
-    if (Object.keys(database).length > 0 && searchWorker.current) {
-      searchWorker.current.postMessage(database);
-      searchWorker.current.postMessage('');
-    }
-  }, [database]);
-
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [initialLoad, setInitialLoad] = React.useState(true);
   const [pagesLoaded, setPagesLoaded] = React.useState(1);
 
-  const [results, setResults] = React.useState<Volume[]>([]);
-  const searchWorkerCallback = React.useCallback(
-    (event) => {
-      const newResults = event.data;
+  const [results, setResults] = React.useState<Volume[]>(initialResults);
 
-      if (!initialLoad && newResults.length === 0) {
-        return;
-      }
+  const [debouncedQuery, setDebouncedQuery] = React.useState(query);
 
-      unstable_batchedUpdates(() => {
-        setInitialLoad(true);
-        setResults(newResults);
-        setPagesLoaded(1);
-        setIsLoading(false);
-      });
-    },
-    [initialLoad]
-  );
+  const search = ({ query, format, category, page = 0 }: any) => {
+    const facetFilters = [];
+    if (category) {
+      facetFilters.push(`volumeInfo.categories:${category}`);
+    }
+    if (format) {
+      facetFilters.push(`kind:${format}`);
+    }
+
+    return index.search<Volume>(query, { facetFilters, page });
+  };
 
   React.useEffect(() => {
     setPagesLoaded(1);
   }, [category, format]);
 
-  const queryCallback = useDebouncedCallback((query) => {
-    searchWorker.current?.postMessage(query);
-  }, 300);
+  React.useEffect(() => {
+    if (!initialLoad) {
+      setIsLoading(true);
+    }
+    const timeout = setTimeout(() => setDebouncedQuery(query), 300);
+
+    return () => clearTimeout(timeout);
+  }, [query, initialLoad]);
 
   React.useEffect(() => {
-    searchWorker.current?.addEventListener('message', searchWorkerCallback);
-
-    return () => searchWorker.current?.removeEventListener('message', searchWorkerCallback);
-  }, [initialLoad]);
+    if (debouncedQuery || category || format) {
+      setInitialLoad(false);
+    }
+  }, [debouncedQuery, category, format]);
 
   React.useEffect(() => {
-    setIsLoading(true);
-    queryCallback.callback(query);
-  }, [query]);
+    if (!initialLoad) {
+      search({ query: debouncedQuery, category, format }).then(({ hits }) => {
+        unstable_batchedUpdates(() => {
+          setResults(hits);
+          setPagesLoaded(1);
+          setIsLoading(false);
+        });
+      });
+    }
+  }, [debouncedQuery, category, format, initialLoad]);
 
   const loaderEl = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (pagesLoaded * PAGE_SIZE > results.length) {
+      search({ query, format, category, page: Math.floor(results.length / 20) }).then(({ hits }) => {
+        setResults((results) => results.concat(hits));
+      });
+    }
+  }, [pagesLoaded, results, query, format, category]);
 
   React.useEffect(() => {
     var options = {
@@ -104,58 +111,44 @@ export default function Cards({
     };
   }, []);
 
-  const filteredResults = React.useMemo(() => {
-    const formatMatchingResults = format === '' ? results : results.filter((volume) => volume.kind === format);
-
-    const categoryMatchingResults =
-      category === ''
-        ? formatMatchingResults
-        : formatMatchingResults.filter((volume) =>
-            (volume.volumeInfo.categories ?? []).find((c) => c.startsWith(category))
-          );
-
-    return categoryMatchingResults;
-  }, [category, format, results]);
-
   return (
     <div>
       {!isLoading && (
         <VStack>
-          {filteredResults.slice(0, PAGE_SIZE * pagesLoaded).map((book) => (
-            <Card volume={book} key={book.volumeInfo.key} setCategory={setCategory} setQuery={setQuery} />
+          {results.slice(0, PAGE_SIZE * pagesLoaded).map((book) => (
+            <Card volume={book} key={book.key} setCategory={setCategory} setQuery={setQuery} />
           ))}
         </VStack>
       )}
 
-      {!isLoading &&
-        ((category.length > 0 && PAGE_SIZE * pagesLoaded > filteredResults.length) || results.length === 0) && (
-          <Text mt={filteredResults.length > 0 ? 8 : undefined} px={3} align="center">
-            No {filteredResults.length > 0 && 'more'} items found.
-            {category.length > 0 && !query.includes(category) && (
-              <span>
-                {' '}
-                <Button
-                  variant="link"
-                  onClick={() => {
-                    unstable_batchedUpdates(() => {
-                      setQuery(category);
-                      setCategory('');
-                    });
-                  }}
-                  verticalAlign="initial"
-                  textDecoration="underline"
-                  fontWeight="normal"
-                  whiteSpace="break-spaces"
-                >
-                  Click here for additional similar results.
-                </Button>
-              </span>
-            )}
-          </Text>
-        )}
+      {!isLoading && ((category.length > 0 && PAGE_SIZE * pagesLoaded > results.length) || results.length === 0) && (
+        <Text mt={results.length > 0 ? 8 : undefined} px={3} align="center">
+          No {results.length > 0 && 'more'} items found.
+          {category.length > 0 && !query.includes(category) && (
+            <span>
+              {' '}
+              <Button
+                variant="link"
+                onClick={() => {
+                  unstable_batchedUpdates(() => {
+                    setQuery(category);
+                    setCategory('');
+                  });
+                }}
+                verticalAlign="initial"
+                textDecoration="underline"
+                fontWeight="normal"
+                whiteSpace="break-spaces"
+              >
+                Click here for additional similar results.
+              </Button>
+            </span>
+          )}
+        </Text>
+      )}
 
       <Box textAlign="center" my={6} ref={loaderEl}>
-        {(isLoading || filteredResults.length > pagesLoaded * PAGE_SIZE) && <Spinner />}
+        {(isLoading || results.length > pagesLoaded * PAGE_SIZE) && <Spinner />}
       </Box>
     </div>
   );

@@ -11,7 +11,6 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { useBookBag } from '../context/bookBag';
-import { useDatabase } from '../context/database';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { RequestBody } from '../pages/api/sendEmail';
 import AtSymbolIconSm from './icons/AtSymbolIconSm';
@@ -24,7 +23,6 @@ const EmailRegExp = RegExp(
 
 const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
   const { books, clearBag } = useBookBag();
-  const database = useDatabase();
 
   const [name, setName] = useLocalStorage<string>('name', '');
   const [email, setEmail] = useLocalStorage<string>('email', '');
@@ -37,11 +35,10 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
 
   const handleBookRequest = (event: any) => {
     event.preventDefault();
-    const booksWithInformation = books.map((key) => database[key]);
 
     setRequesting(true);
 
-    const body: RequestBody = { name, email, additionalInformation, books: booksWithInformation };
+    const body: RequestBody = { name, email, additionalInformation, books };
 
     fetch('/api/sendEmail', {
       method: 'POST',

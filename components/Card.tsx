@@ -1,4 +1,4 @@
-import { Box, Button, Heading, HStack, Icon, Tag, Tooltip, useColorModeValue } from '@chakra-ui/react';
+import { Box, Button, Heading, HStack, Icon, Tag, Tooltip, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import Image from 'next/image';
 import React from 'react';
 import { useBookBag } from '../context/bookBag';
@@ -48,7 +48,10 @@ export default function Card({
   setQuery: (query: string) => void;
 }) {
   const book = volume.volumeInfo;
-  const { title, subtitle, authors, description, imageLinks, categories = [], publishedDate, pageCount } = book;
+  if (!book) {
+    return null;
+  }
+  const { title, subtitle, authors, imageLinks } = book;
 
   const [expanded, setExpanded] = React.useState(false);
 
@@ -56,6 +59,8 @@ export default function Card({
   const isSmallMobile = useIsSmallMobile();
 
   const { addBookToBag, removeBookFromBag, books } = useBookBag();
+
+  const colorMode = useColorMode();
 
   return (
     <Box
@@ -73,7 +78,7 @@ export default function Card({
             flex="none"
             width="20%"
             maxWidth={24}
-            background={useColorModeValue('gray.100', 'gray.800')}
+            background={colorMode.colorMode === 'light' ? 'gray.100' : 'gray.900'}
           >
             <Image src={imageLinks.thumbnail} layout="fill" objectFit="contain" />
           </Box>
@@ -114,9 +119,9 @@ export default function Card({
           )}
 
           <HStack as="footer" mt={3} mb={1}>
-            {!books.includes(book.key) ? (
+            {!books.find((book) => book.key === volume.key) ? (
               <Button
-                onClick={() => addBookToBag(book.key)}
+                onClick={() => addBookToBag(volume)}
                 size="xs"
                 colorScheme="blue"
                 leftIcon={<BagIcon height={16} />}
@@ -125,7 +130,7 @@ export default function Card({
               </Button>
             ) : (
               <Button
-                onClick={() => removeBookFromBag(book.key)}
+                onClick={() => removeBookFromBag(volume.key)}
                 size="xs"
                 colorScheme="red"
                 leftIcon={<XCircleIcon height={16} />}
