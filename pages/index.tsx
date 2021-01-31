@@ -201,6 +201,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     maxFacetHits: 100,
   });
 
+  context.res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
+
   return {
     props: {
       initialResults: initialResults.hits,
