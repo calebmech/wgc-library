@@ -147,26 +147,23 @@ export default function Home({ initialResults, categories }: { initialResults: V
             initialResults={initialResults}
           />
         </Container>
-        {isDesktop ? (
-          <Container
-            flex="0 0 33vw"
-            mx={0}
-            p={7}
-            w="full"
-            background={useColorModeValue('white', 'gray.900')}
-            top="0"
-            position="sticky"
-            minWidth="max-content"
-            display="flex"
-            flexDirection="column"
-            height="100vh"
-            borderLeftWidth="1px"
-          >
-            <LazyDesktopBookBag />
-          </Container>
-        ) : (
-          <LazyMobileBookBag isOpen={isOpen} onClose={onClose} />
-        )}
+        <Container
+          className="bookBagSidebar"
+          flex="0 0 33vw"
+          mx={0}
+          p={7}
+          w="full"
+          background={useColorModeValue('white', 'gray.900')}
+          top="0"
+          position="sticky"
+          minWidth="max-content"
+          display="flex"
+          flexDirection="column"
+          height="100vh"
+          borderLeftWidth="1px"
+        >
+          {isDesktop ? <LazyDesktopBookBag /> : <LazyMobileBookBag isOpen={isOpen} onClose={onClose} />}
+        </Container>
       </Flex>
     </BookBagProvider>
   );
