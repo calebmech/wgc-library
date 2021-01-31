@@ -7,7 +7,13 @@ const BookBagItem = ({ onRemove, book }: { book: Book; onRemove: () => void }) =
     <HStack w="full">
       {book.imageLinks && (
         <Box position="relative" w={8} h={12} flex="none" mr={3}>
-          <Image layout="fill" objectFit="contain" className="object-left" src={book.imageLinks.thumbnail} />
+          <Image
+            layout="fill"
+            objectFit="contain"
+            className="object-left"
+            src={book.imageLinks.thumbnail}
+            alt="Book cover"
+          />
         </Box>
       )}
       <div>
