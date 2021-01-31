@@ -16,7 +16,7 @@ const LazyDesktopBookBag = dynamic(() => import('../components/DesktopBookBag'),
   ssr: false,
 });
 
-const BookBagDecider = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => {} }) => {
+const BookBagDecider = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const isDesktop = useIsDesktop();
   return isDesktop ? <LazyDesktopBookBag /> : <LazyMobileBookBag isOpen={isOpen} onClose={onClose} />;
 };
