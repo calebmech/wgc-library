@@ -15,12 +15,12 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import algoliasearch from 'algoliasearch/lite';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import React from 'react';
 import BookBagForm from '../components/BookBagForm';
-import Cards from '../components/Cards';
+import Cards, { search } from '../components/Cards';
 import CategoriesSelector from '../components/CategoriesSelector';
 import Header from '../components/Header';
 import BookBagProvider from '../context/bookBag';
@@ -186,11 +186,17 @@ export default function Home({ initialResults, categories }: { initialResults: V
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  console.log(context);
   const searchClient = algoliasearch('WV458H32HP', '9238085c928f4a26733df80b8f0a9a9c');
   const index = searchClient.initIndex('wgc-library');
 
-  const initialResults = await index.search('');
+  const initialResults = await search({
+    index,
+    query: context.query.q as string | undefined,
+    category: context.query.category as string | undefined,
+    format: context.query.format as string | undefined,
+  });
   const categories = await index.searchForFacetValues('volumeInfo.categories', '*', {
     maxFacetHits: 100,
   });

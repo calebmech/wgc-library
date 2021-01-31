@@ -1,5 +1,5 @@
 import { Box, Button, Spinner, Text, VStack } from '@chakra-ui/react';
-import algoliasearch from 'algoliasearch/lite';
+import algoliasearch, { SearchIndex } from 'algoliasearch/lite';
 import React from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import { Volume } from '../types';
@@ -10,6 +10,30 @@ const PAGE_SIZE = 8;
 const searchClient = algoliasearch('WV458H32HP', '9238085c928f4a26733df80b8f0a9a9c');
 
 const index = searchClient.initIndex('wgc-library');
+
+export const search = ({
+  index,
+  query = '',
+  format,
+  category,
+  page = 0,
+}: {
+  index: SearchIndex;
+  query?: string;
+  format?: string;
+  category?: string;
+  page?: number;
+}) => {
+  const facetFilters = [];
+  if (category) {
+    facetFilters.push(`volumeInfo.categories:${category}`);
+  }
+  if (format) {
+    facetFilters.push(`kind:${format}`);
+  }
+
+  return index.search<Volume>(query, { facetFilters, page, hitsPerPage: 24 });
+};
 
 export default function Cards({
   query,
@@ -34,18 +58,6 @@ export default function Cards({
 
   const [debouncedQuery, setDebouncedQuery] = React.useState(query);
 
-  const search = ({ query, format, category, page = 0 }: any) => {
-    const facetFilters = [];
-    if (category) {
-      facetFilters.push(`volumeInfo.categories:${category}`);
-    }
-    if (format) {
-      facetFilters.push(`kind:${format}`);
-    }
-
-    return index.search<Volume>(query, { facetFilters, page });
-  };
-
   React.useEffect(() => {
     setPagesLoaded(1);
   }, [category, format]);
@@ -67,7 +79,7 @@ export default function Cards({
 
   React.useEffect(() => {
     if (!initialLoad) {
-      search({ query: debouncedQuery, category, format }).then(({ hits }) => {
+      search({ index, query: debouncedQuery, category, format }).then(({ hits }) => {
         unstable_batchedUpdates(() => {
           setResults(hits);
           setPagesLoaded(1);
@@ -81,9 +93,9 @@ export default function Cards({
 
   React.useEffect(() => {
     if (pagesLoaded * PAGE_SIZE > results.length) {
-      search({ query, format, category, page: Math.floor(results.length / 20) }).then(({ hits }) => {
-        setResults((results) => results.concat(hits));
-      });
+      // search({ query, format, category, page: Math.floor(results.length / 20) }).then(({ hits }) => {
+      //   setResults((results) => results.concat(hits));
+      // });
     }
   }, [pagesLoaded, results, query, format, category]);
 
