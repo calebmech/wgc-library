@@ -4,6 +4,7 @@ import {
   CloseButton,
   Container,
   Flex,
+  Heading,
   HStack,
   Input,
   InputGroup,
@@ -18,13 +19,19 @@ import { GetStaticProps } from 'next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import React from 'react';
+import BookBagForm from '../components/BookBagForm';
 import Cards from '../components/Cards';
 import CategoriesSelector from '../components/CategoriesSelector';
 import Header from '../components/Header';
 import BookBagProvider from '../context/bookBag';
+import { useIsDesktop } from '../hooks/useIsMobile';
 import { Kind, Volume } from '../types';
 
-const LazyBookBagDecider = dynamic(() => import('../components/BookBagDecider'), {
+const LazyMobileBookBag = dynamic(() => import('../components/MobileBookBag'), {
+  ssr: false,
+});
+
+const LazyDesktopBookBag = dynamic(() => import('../components/DesktopBookBag'), {
   ssr: false,
 });
 
@@ -45,6 +52,8 @@ const createQueryObject = (query: { [key: string]: string }): { [key: string]: s
 
 export default function Home({ initialResults, categories }: { initialResults: Volume[]; categories: Facet[] }) {
   const router = useRouter();
+
+  const isDesktop = useIsDesktop();
 
   const [query, setQuery] = React.useState(getQueryValue(router.query.q));
   const [category, setCategory] = React.useState(getQueryValue(router.query.category));
@@ -68,6 +77,12 @@ export default function Home({ initialResults, categories }: { initialResults: V
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const searchRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    searchRef.current?.focus();
+  }, [searchRef]);
+
   return (
     <BookBagProvider>
       <Flex background={useColorModeValue('gray.50', 'gray.800')} minHeight="100%">
@@ -82,9 +97,9 @@ export default function Home({ initialResults, categories }: { initialResults: V
                 onChange={(e) => setQuery(e.target.value)}
                 size="lg"
                 aria-label="Search"
-                type="search"
                 autoFocus
                 role="searchbox"
+                ref={searchRef}
                 background={useColorModeValue('white', 'gray.700')}
               />
               {query.length > 0 && (
@@ -154,7 +169,17 @@ export default function Home({ initialResults, categories }: { initialResults: V
           height="100vh"
           borderLeftWidth="1px"
         >
-          <LazyBookBagDecider isOpen={isOpen} onClose={onClose} />
+          <Box display="flex" justifyContent="space-between" mb={5}>
+            <Heading as="h2" size="md">
+              Book bag
+            </Heading>
+          </Box>
+          <Box display="flex" flex="1">
+            {isDesktop ? <LazyDesktopBookBag /> : <LazyMobileBookBag isOpen={isOpen} onClose={onClose} />}
+          </Box>
+          <footer>
+            <BookBagForm />
+          </footer>
         </Container>
       </Flex>
     </BookBagProvider>

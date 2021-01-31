@@ -18,14 +18,14 @@ const BookBagContext = React.createContext<BookBagContextType>({
 interface ActionType {
   type: string;
   isbn?: string;
-  item?: Volume;
+  items?: Volume[];
 }
 
-function reducer(books: Volume[] = [], { type, isbn, item }: ActionType) {
+function reducer(books: Volume[] = [], { type, isbn, items }: ActionType) {
   switch (type) {
     case 'ADD_BOOK': {
-      if (item && !books.includes(item)) {
-        return books.concat(item);
+      if (items) {
+        return books.concat(items.filter((item) => !books.includes(item)));
       }
 
       return books;
@@ -45,20 +45,12 @@ function reducer(books: Volume[] = [], { type, isbn, item }: ActionType) {
 }
 
 export default function BookBagProvider(props: any) {
-  const storedBooks = globalThis.window?.localStorage.getItem('bag');
-  const parsedStoredBooks = storedBooks ? JSON.parse(storedBooks) : [];
-  const verifiedStoredBooks = parsedStoredBooks.find((book: any) => typeof book === 'string') ? [] : parsedStoredBooks;
+  const [books, dispatch] = React.useReducer(reducer, []);
 
-  const [books, dispatch] = React.useReducer(reducer, verifiedStoredBooks);
-
-  useEffect(() => {
-    globalThis.window?.localStorage.setItem('bag', JSON.stringify(books));
-  }, [books]);
-
-  const addBookToBag = (item: Volume) => {
+  const addBookToBag = (...items: Volume[]) => {
     return dispatch({
       type: 'ADD_BOOK',
-      item,
+      items,
     });
   };
 
@@ -69,6 +61,20 @@ export default function BookBagProvider(props: any) {
     });
 
   const clearBag = () => dispatch({ type: 'CLEAR_BAG' });
+
+  useEffect(() => {
+    const storedBooks = localStorage.getItem('bag');
+    const parsedStoredBooks = storedBooks ? JSON.parse(storedBooks) : [];
+    const verifiedStoredBooks = parsedStoredBooks.find((book: any) => typeof book === 'string')
+      ? []
+      : parsedStoredBooks;
+
+    addBookToBag(...verifiedStoredBooks);
+  }, []);
+
+  useEffect(() => {
+    globalThis.window?.localStorage.setItem('bag', JSON.stringify(books));
+  }, [books]);
 
   const value = {
     books,
