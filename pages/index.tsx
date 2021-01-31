@@ -9,7 +9,6 @@ import {
   InputGroup,
   InputRightElement,
   Select,
-  Spinner,
   useColorModeValue,
   useDisclosure,
   VStack,
@@ -23,19 +22,9 @@ import Cards from '../components/Cards';
 import CategoriesSelector from '../components/CategoriesSelector';
 import Header from '../components/Header';
 import BookBagProvider from '../context/bookBag';
-import { useIsDesktop } from '../hooks/useIsMobile';
 import { Kind, Volume } from '../types';
 
-const LazyMobileBookBag = dynamic(() => import('../components/MobileBookBag'), {
-  ssr: false,
-});
-
-const LazyDesktopBookBag = dynamic(() => import('../components/DesktopBookBag'), {
-  loading: () => (
-    <Box width="full" textAlign="center">
-      <Spinner />
-    </Box>
-  ),
+const LazyBookBagDecider = dynamic(() => import('../components/BookBagDecider'), {
   ssr: false,
 });
 
@@ -77,8 +66,6 @@ export default function Home({ initialResults, categories }: { initialResults: V
     return () => clearTimeout(id);
   }, [query, category, format]);
 
-  const isDesktop = useIsDesktop();
-
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -88,12 +75,16 @@ export default function Home({ initialResults, categories }: { initialResults: V
           <Header bagOpen={isOpen} setBagOpen={onOpen} />
 
           <VStack mb={6} mt={2} spacing={3}>
-            <InputGroup>
+            <InputGroup role="search">
               <Input
                 placeholder="Search..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 size="lg"
+                aria-label="Search"
+                type="search"
+                autoFocus
+                role="searchbox"
                 background={useColorModeValue('white', 'gray.700')}
               />
               {query.length > 0 && (
@@ -109,6 +100,7 @@ export default function Home({ initialResults, categories }: { initialResults: V
                 value={format}
                 onChange={(event) => setFormat(event.target.value)}
                 width="100%"
+                aria-label="Format"
               >
                 <option value="">All formats</option>
                 <option value={Kind.BooksVolume}>Book</option>
@@ -162,7 +154,7 @@ export default function Home({ initialResults, categories }: { initialResults: V
           height="100vh"
           borderLeftWidth="1px"
         >
-          {isDesktop ? <LazyDesktopBookBag /> : <LazyMobileBookBag isOpen={isOpen} onClose={onClose} />}
+          <LazyBookBagDecider isOpen={isOpen} onClose={onClose} />
         </Container>
       </Flex>
     </BookBagProvider>

@@ -80,7 +80,7 @@ export default function Card({
             maxWidth={24}
             background={colorMode.colorMode === 'light' ? 'gray.100' : 'gray.900'}
           >
-            <Image src={imageLinks.thumbnail} layout="fill" objectFit="contain" />
+            <Image src={imageLinks.thumbnail} layout="fill" objectFit="contain" alt="Book cover" />
           </Box>
         )}
 

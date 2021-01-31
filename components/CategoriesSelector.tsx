@@ -18,6 +18,7 @@ const CategoriesSelector = ({
       value={category}
       onChange={(event) => setCategory(event.target.value)}
       background={useColorModeValue('white', 'gray.700')}
+      aria-label="Category"
     >
       <option value="">All categories</option>
       {category && !categories.find((c) => c.value === category) && (

@@ -86,6 +86,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
         <Input
           type="text"
           placeholder="Full name"
+          aria-label="Full name"
           isRequired
           value={name}
           background={useColorModeValue('white', 'gray.700')}
@@ -98,6 +99,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
         <Input
           type="email"
           placeholder="Email"
+          aria-label="Email"
           isRequired
           isInvalid={!isEmailValid}
           value={email}
@@ -108,6 +110,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
 
       <Textarea
         placeholder="Additional information"
+        aria-label="Additional information"
         value={additionalInformation}
         background={useColorModeValue('white', 'gray.700')}
         onChange={(event) => setAdditionalInformation(event.target.value)}
