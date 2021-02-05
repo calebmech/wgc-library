@@ -93,7 +93,7 @@ export default function Home({
 
   return (
     <BookBagProvider>
-      <Flex background={useColorModeValue('gray.50', 'gray.800')} minHeight="100%">
+      <Flex background={useColorModeValue('gray.50', 'gray.800')} minHeight="100vh">
         <Container maxW="768px" mt={3}>
           <Header bagOpen={isOpen} setBagOpen={onOpen} />
 
