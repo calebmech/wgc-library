@@ -87,6 +87,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
           type="text"
           placeholder="Full name"
           aria-label="Full name"
+          autoComplete="name"
           isRequired
           value={name}
           background={useColorModeValue('white', 'gray.700')}
@@ -100,6 +101,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
           type="email"
           placeholder="Email"
           aria-label="Email"
+          autoComplete="email"
           isRequired
           isInvalid={!isEmailValid}
           value={email}

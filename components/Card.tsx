@@ -90,7 +90,7 @@ export default function Card({
               {title.trim()}
               {subtitle && `: ${subtitle}`}
             </Heading>
-            <Heading as="h2" size="sm">
+            <Heading as="h2" size="sm" color={useColorModeValue('gray.600', 'gray.400')}>
               {authors &&
                 authors.map((author, i) => (
                   <React.Fragment key={i}>

@@ -50,7 +50,15 @@ const createQueryObject = (query: { [key: string]: string }): { [key: string]: s
   return Object.fromEntries(entries.filter(([key, value]) => value.trim().length > 0));
 };
 
-export default function Home({ initialResults, categories }: { initialResults: Volume[]; categories: Facet[] }) {
+export default function Home({
+  initialResults,
+  initialTotalResults,
+  categories,
+}: {
+  initialResults: Volume[];
+  initialTotalResults: number;
+  categories: Facet[];
+}) {
   const router = useRouter();
 
   const isDesktop = useIsDesktop();
@@ -152,6 +160,7 @@ export default function Home({ initialResults, categories }: { initialResults: V
             setCategory={setCategory}
             format={format}
             initialResults={initialResults}
+            initialTotalResults={initialTotalResults}
           />
         </Container>
         <Container
@@ -187,7 +196,6 @@ export default function Home({ initialResults, categories }: { initialResults: V
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  console.log(context);
   const searchClient = algoliasearch('WV458H32HP', '9238085c928f4a26733df80b8f0a9a9c');
   const index = searchClient.initIndex('wgc-library');
 
@@ -201,11 +209,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     maxFacetHits: 100,
   });
 
-  context.res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
+  // Cache for one year (clears on redeploy)
+  context.res.setHeader('Cache-Control', 's-maxage=31536000');
 
   return {
     props: {
       initialResults: initialResults.hits,
+      initialTotalResults: initialResults.nbHits,
       categories: categories.facetHits,
     },
   };
