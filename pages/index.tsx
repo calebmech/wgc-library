@@ -15,12 +15,12 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import algoliasearch from 'algoliasearch/lite';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import React from 'react';
 import BookBagForm from '../components/BookBagForm';
-import Cards from '../components/Cards';
+import Cards, { search } from '../components/Cards';
 import CategoriesSelector from '../components/CategoriesSelector';
 import Header from '../components/Header';
 import BookBagProvider from '../context/bookBag';
@@ -50,7 +50,15 @@ const createQueryObject = (query: { [key: string]: string }): { [key: string]: s
   return Object.fromEntries(entries.filter(([key, value]) => value.trim().length > 0));
 };
 
-export default function Home({ initialResults, categories }: { initialResults: Volume[]; categories: Facet[] }) {
+export default function Home({
+  initialResults,
+  initialTotalResults,
+  categories,
+}: {
+  initialResults: Volume[];
+  initialTotalResults: number;
+  categories: Facet[];
+}) {
   const router = useRouter();
 
   const isDesktop = useIsDesktop();
@@ -152,10 +160,11 @@ export default function Home({ initialResults, categories }: { initialResults: V
             setCategory={setCategory}
             format={format}
             initialResults={initialResults}
+            initialTotalResults={initialTotalResults}
           />
         </Container>
         <Container
-          className="bookBagSidebar"
+          className="desktop-display-only"
           flex="0 0 33vw"
           mx={0}
           p={7}
@@ -186,18 +195,27 @@ export default function Home({ initialResults, categories }: { initialResults: V
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const searchClient = algoliasearch('WV458H32HP', '9238085c928f4a26733df80b8f0a9a9c');
   const index = searchClient.initIndex('wgc-library');
 
-  const initialResults = await index.search('');
+  const initialResults = await search({
+    index,
+    query: context.query.q as string | undefined,
+    category: context.query.category as string | undefined,
+    format: context.query.format as string | undefined,
+  });
   const categories = await index.searchForFacetValues('volumeInfo.categories', '*', {
     maxFacetHits: 100,
   });
 
+  // Cache for one year (clears on redeploy)
+  context.res.setHeader('Cache-Control', 's-maxage=31536000');
+
   return {
     props: {
       initialResults: initialResults.hits,
+      initialTotalResults: initialResults.nbHits,
       categories: categories.facetHits,
     },
   };

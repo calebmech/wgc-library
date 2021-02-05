@@ -1,6 +1,6 @@
 import { Box, Button, Spinner, Text, VStack } from '@chakra-ui/react';
-import algoliasearch from 'algoliasearch/lite';
-import React from 'react';
+import algoliasearch, { SearchIndex } from 'algoliasearch/lite';
+import React, { useReducer } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import { Volume } from '../types';
 import Card from './Card';
@@ -11,6 +11,100 @@ const searchClient = algoliasearch('WV458H32HP', '9238085c928f4a26733df80b8f0a9a
 
 const index = searchClient.initIndex('wgc-library');
 
+export const useIsMount = () => {
+  const isMountRef = React.useRef(true);
+  React.useEffect(() => {
+    isMountRef.current = false;
+  }, []);
+  return isMountRef.current;
+};
+
+export const search = ({
+  index,
+  query = '',
+  format,
+  category,
+  page = 0,
+}: {
+  index: SearchIndex;
+  query?: string;
+  format?: string;
+  category?: string;
+  page?: number;
+}) => {
+  const facetFilters = [];
+  if (category) {
+    facetFilters.push(`volumeInfo.categories:${category}`);
+  }
+  if (format) {
+    facetFilters.push(`kind:${format}`);
+  }
+
+  return index.search<Volume>(query, { facetFilters, page, hitsPerPage: PAGE_SIZE });
+};
+
+interface State {
+  isLoading: boolean;
+  pagesLoaded: number;
+  totalResults: number;
+  results: Volume[];
+}
+
+enum Actions {
+  NEW_QUERY = 'NEW_QUERY',
+  QUERY_LOADED = 'QUERY_LOADED',
+  NEXT_PAGE = 'NEW_PAGE',
+}
+
+interface NewQueryAction {
+  type: Actions.NEW_QUERY;
+}
+
+interface QueryLoadedAction {
+  type: Actions.QUERY_LOADED;
+  results: Volume[];
+  totalResults: number;
+}
+
+interface NextPageAction {
+  type: Actions.NEXT_PAGE;
+  results: Volume[];
+}
+
+type ActionTypes = NewQueryAction | QueryLoadedAction | NextPageAction;
+
+const reducer = (state: State, action: ActionTypes): State => {
+  switch (action.type) {
+    case Actions.NEW_QUERY: {
+      return {
+        isLoading: true,
+        pagesLoaded: 1,
+        totalResults: 0,
+        results: [],
+      };
+    }
+    case Actions.QUERY_LOADED: {
+      return {
+        isLoading: false,
+        pagesLoaded: 1,
+        totalResults: action.totalResults,
+        results: action.results,
+      };
+    }
+    case Actions.NEXT_PAGE: {
+      return {
+        ...state,
+        isLoading: false,
+        pagesLoaded: state.pagesLoaded + 1,
+        results: state.results.concat(action.results),
+      };
+    }
+    default: {
+      return state;
+    }
+  }
+};
+
 export default function Cards({
   query,
   setQuery,
@@ -18,6 +112,7 @@ export default function Cards({
   category,
   setCategory,
   initialResults,
+  initialTotalResults,
 }: {
   query: string;
   setQuery: (query: string) => void;
@@ -25,81 +120,59 @@ export default function Cards({
   category: string;
   setCategory: (category: string) => void;
   initialResults: Volume[];
+  initialTotalResults: number;
 }) {
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [initialLoad, setInitialLoad] = React.useState(true);
-  const [pagesLoaded, setPagesLoaded] = React.useState(1);
+  const [state, dispatch] = React.useReducer(reducer, {
+    isLoading: false,
+    pagesLoaded: 1,
+    results: initialResults,
+    totalResults: initialTotalResults,
+  });
 
-  const [results, setResults] = React.useState<Volume[]>(initialResults);
+  const isMount = useIsMount();
 
   const [debouncedQuery, setDebouncedQuery] = React.useState(query);
 
-  const search = ({ query, format, category, page = 0 }: any) => {
-    const facetFilters = [];
-    if (category) {
-      facetFilters.push(`volumeInfo.categories:${category}`);
-    }
-    if (format) {
-      facetFilters.push(`kind:${format}`);
-    }
-
-    return index.search<Volume>(query, { facetFilters, page });
-  };
-
   React.useEffect(() => {
-    setPagesLoaded(1);
-  }, [category, format]);
-
-  React.useEffect(() => {
-    if (!initialLoad) {
-      setIsLoading(true);
+    if (!isMount) {
+      dispatch({ type: Actions.NEW_QUERY });
     }
+
     const timeout = setTimeout(() => setDebouncedQuery(query), 300);
 
     return () => clearTimeout(timeout);
-  }, [query, initialLoad]);
+  }, [query, category, format]);
 
   React.useEffect(() => {
-    if (debouncedQuery || category || format) {
-      setInitialLoad(false);
+    if (!isMount) {
+      search({ index, query: debouncedQuery, category, format }).then(({ hits, nbHits }) =>
+        dispatch({ type: Actions.QUERY_LOADED, results: hits, totalResults: nbHits })
+      );
     }
   }, [debouncedQuery, category, format]);
-
-  React.useEffect(() => {
-    if (!initialLoad) {
-      search({ query: debouncedQuery, category, format }).then(({ hits }) => {
-        unstable_batchedUpdates(() => {
-          setResults(hits);
-          setPagesLoaded(1);
-          setIsLoading(false);
-        });
-      });
-    }
-  }, [debouncedQuery, category, format, initialLoad]);
 
   const loaderEl = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (pagesLoaded * PAGE_SIZE > results.length) {
-      search({ query, format, category, page: Math.floor(results.length / 20) }).then(({ hits }) => {
-        setResults((results) => results.concat(hits));
-      });
-    }
-  }, [pagesLoaded, results, query, format, category]);
-
-  React.useEffect(() => {
-    var options = {
-      root: null,
-      rootMargin: '100px',
-    };
-    // initialize IntersectionObserver
-    // and attaching to Load More div
-    const observer = new IntersectionObserver((entities) => {
-      const target = entities[0];
-      if (target.isIntersecting) {
-        setPagesLoaded((page) => page + 1);
+    const observer = new IntersectionObserver(
+      ([target]) => {
+        if (target.isIntersecting && state.pagesLoaded * PAGE_SIZE < state.totalResults) {
+          search({
+            query,
+            format,
+            category,
+            page: state.pagesLoaded,
+            index,
+          }).then(({ hits }) => {
+            dispatch({ type: Actions.NEXT_PAGE, results: hits });
+          });
+        }
+      },
+      {
+        root: null,
+        rootMargin: '100px',
       }
-    }, options);
+    );
     if (loaderEl.current) {
       observer.observe(loaderEl.current);
     }
@@ -109,46 +182,49 @@ export default function Cards({
         observer.unobserve(loaderEl.current);
       }
     };
-  }, []);
+  }, [state, query, format, category]);
 
   return (
     <div>
-      {!isLoading && (
+      {!state.isLoading && (
         <VStack>
-          {results.slice(0, PAGE_SIZE * pagesLoaded).map((book) => (
+          {state.results.map((book) => (
             <Card volume={book} key={book.key} setCategory={setCategory} setQuery={setQuery} />
           ))}
         </VStack>
       )}
 
-      {!isLoading && ((category.length > 0 && PAGE_SIZE * pagesLoaded > results.length) || results.length === 0) && (
-        <Text mt={results.length > 0 ? 8 : undefined} px={3} align="center">
-          No {results.length > 0 && 'more'} items found.
-          {category.length > 0 && !query.includes(category) && (
-            <span>
-              {' '}
-              <Button
-                variant="link"
-                onClick={() => {
-                  unstable_batchedUpdates(() => {
-                    setQuery(category);
-                    setCategory('');
-                  });
-                }}
-                verticalAlign="initial"
-                textDecoration="underline"
-                fontWeight="normal"
-                whiteSpace="break-spaces"
-              >
-                Click here for additional similar results.
-              </Button>
-            </span>
-          )}
-        </Text>
-      )}
+      {!state.isLoading &&
+        ((category.length > 0 && PAGE_SIZE * state.pagesLoaded > state.results.length) ||
+          state.results.length === 0) && (
+          <Text mt={state.results.length > 0 ? 8 : undefined} px={3} align="center">
+            No {state.results.length > 0 && 'more'} items found.
+            {category.length > 0 && !query.includes(category) && (
+              <span>
+                {' '}
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    unstable_batchedUpdates(() => {
+                      setQuery(category);
+                      setDebouncedQuery(category);
+                      setCategory('');
+                    });
+                  }}
+                  verticalAlign="initial"
+                  textDecoration="underline"
+                  fontWeight="normal"
+                  whiteSpace="break-spaces"
+                >
+                  Click here for additional similar results.
+                </Button>
+              </span>
+            )}
+          </Text>
+        )}
 
-      <Box textAlign="center" my={6} ref={loaderEl}>
-        {(isLoading || results.length > pagesLoaded * PAGE_SIZE) && <Spinner />}
+      <Box textAlign="center" my={6}>
+        {(state.isLoading || state.totalResults > state.pagesLoaded * PAGE_SIZE) && <Spinner ref={loaderEl} />}
       </Box>
     </div>
   );
