@@ -108,7 +108,7 @@ export default function Card({
             </Heading>
           </Box>
 
-          {!isMobile && (
+          <div className="desktop-display-only">
             <CardDescription
               book={book}
               volume={volume}
@@ -116,7 +116,7 @@ export default function Card({
               setCategory={setCategory}
               showShortDescription
             />
-          )}
+          </div>
 
           <HStack as="footer" mt={3} mb={1}>
             {!books.find((book) => book.key === volume.key) ? (
@@ -135,19 +135,21 @@ export default function Card({
                 colorScheme="red"
                 leftIcon={<XCircleIcon height={16} />}
               >
-                Remove {!isMobile && 'from bag'}
+                Remove <span className="desktop-display-only">&nbsp;from bag</span>
               </Button>
             )}
             <Button onClick={() => setExpanded(!expanded)} size="xs" ml={1} leftIcon={<InfoIcon height={16} />}>
               {expanded ? 'Less' : 'More'} {!isSmallMobile && 'information'}
             </Button>
-            {!isMobile && volume.kind && (
-              <Tooltip label={`Format: ${mapFormatToText(volume.kind)}`}>
-                <Tag>
-                  <FormatIcon format={volume.kind} />
-                </Tag>
-              </Tooltip>
-            )}
+            <div className="desktop-display-only">
+              {volume.kind && (
+                <Tooltip label={`Format: ${mapFormatToText(volume.kind)}`}>
+                  <Tag>
+                    <FormatIcon format={volume.kind} />
+                  </Tag>
+                </Tooltip>
+              )}
+            </div>
           </HStack>
         </Box>
       </Box>

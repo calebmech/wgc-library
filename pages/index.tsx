@@ -164,7 +164,7 @@ export default function Home({
           />
         </Container>
         <Container
-          className="bookBagSidebar"
+          className="desktop-display-only"
           flex="0 0 33vw"
           mx={0}
           p={7}
