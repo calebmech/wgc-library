@@ -13,3 +13,9 @@ body {
     display: none !important;
   }
 }
+
+@media only screen and (max-width: 400px) {
+  .not-small-mobile-display-only {
+    display: none !important;
+  }
+}
