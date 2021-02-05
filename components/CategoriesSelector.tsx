@@ -1,48 +1,38 @@
 import React from 'react';
-import { useDatabase } from '../context/database';
 import { Select, useColorModeValue } from '@chakra-ui/react';
+import { Facet } from '../pages';
 
 const CategoriesSelector = ({
+  categories,
   category,
   setCategory,
   format,
 }: {
+  categories: Facet[];
   category: string;
   format: string;
   setCategory: (category: string) => void;
 }) => {
-  const database = useDatabase();
-
-  const categories = React.useMemo(
-    () =>
-      Array.from(
-        new Set(
-          Object.values(database)
-            .filter((book) => format === '' || book.kind === format)
-            .flatMap((book) => book.volumeInfo.categories ?? [])
-        ).values()
-      ).sort(),
-    [database, format]
-  );
-
-  React.useEffect(() => {
-    if (!categories.includes(category)) {
-      setCategory('');
-    }
-  }, [categories, format]);
-
   return (
     <Select
       value={category}
       onChange={(event) => setCategory(event.target.value)}
       background={useColorModeValue('white', 'gray.700')}
+      aria-label="Category"
     >
       <option value="">All categories</option>
-      {categories.map((category) => (
+      {category && !categories.find((c) => c.value === category) && (
         <option value={category} key={category}>
           {category}
         </option>
-      ))}
+      )}
+      {categories
+        .sort((a, b) => a.value.localeCompare(b.value))
+        .map((c) => (
+          <option value={c.value} key={c.value}>
+            {c.value} ({c.count})
+          </option>
+        ))}
     </Select>
   );
 };

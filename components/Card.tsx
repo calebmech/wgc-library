@@ -1,4 +1,4 @@
-import { Box, Button, Heading, HStack, Icon, Tag, Tooltip, useColorModeValue } from '@chakra-ui/react';
+import { Box, Button, Heading, HStack, Icon, Tag, Tooltip, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import Image from 'next/image';
 import React from 'react';
 import { useBookBag } from '../context/bookBag';
@@ -48,7 +48,10 @@ export default function Card({
   setQuery: (query: string) => void;
 }) {
   const book = volume.volumeInfo;
-  const { title, subtitle, authors, description, imageLinks, categories = [], publishedDate, pageCount } = book;
+  if (!book) {
+    return null;
+  }
+  const { title, subtitle, authors, imageLinks } = book;
 
   const [expanded, setExpanded] = React.useState(false);
 
@@ -56,6 +59,8 @@ export default function Card({
   const isSmallMobile = useIsSmallMobile();
 
   const { addBookToBag, removeBookFromBag, books } = useBookBag();
+
+  const colorMode = useColorMode();
 
   return (
     <Box
@@ -73,9 +78,9 @@ export default function Card({
             flex="none"
             width="20%"
             maxWidth={24}
-            background={useColorModeValue('gray.100', 'gray.800')}
+            background={colorMode.colorMode === 'light' ? 'gray.100' : 'gray.900'}
           >
-            <Image src={imageLinks.thumbnail} layout="fill" objectFit="contain" />
+            <Image src={imageLinks.thumbnail} layout="fill" objectFit="contain" alt="Book cover" />
           </Box>
         )}
 
@@ -85,7 +90,7 @@ export default function Card({
               {title.trim()}
               {subtitle && `: ${subtitle}`}
             </Heading>
-            <Heading as="h2" size="sm">
+            <Heading as="h2" size="sm" color={useColorModeValue('gray.600', 'gray.400')}>
               {authors &&
                 authors.map((author, i) => (
                   <React.Fragment key={i}>
@@ -103,7 +108,7 @@ export default function Card({
             </Heading>
           </Box>
 
-          {!isMobile && (
+          <div className="desktop-display-only">
             <CardDescription
               book={book}
               volume={volume}
@@ -111,12 +116,12 @@ export default function Card({
               setCategory={setCategory}
               showShortDescription
             />
-          )}
+          </div>
 
           <HStack as="footer" mt={3} mb={1}>
-            {!books.includes(book.key) ? (
+            {!books.find((book) => book.key === volume.key) ? (
               <Button
-                onClick={() => addBookToBag(book.key)}
+                onClick={() => addBookToBag(volume)}
                 size="xs"
                 colorScheme="blue"
                 leftIcon={<BagIcon height={16} />}
@@ -125,24 +130,26 @@ export default function Card({
               </Button>
             ) : (
               <Button
-                onClick={() => removeBookFromBag(book.key)}
+                onClick={() => removeBookFromBag(volume.key)}
                 size="xs"
                 colorScheme="red"
                 leftIcon={<XCircleIcon height={16} />}
               >
-                Remove {!isMobile && 'from bag'}
+                Remove <span className="desktop-display-only">&nbsp;from bag</span>
               </Button>
             )}
             <Button onClick={() => setExpanded(!expanded)} size="xs" ml={1} leftIcon={<InfoIcon height={16} />}>
               {expanded ? 'Less' : 'More'} {!isSmallMobile && 'information'}
             </Button>
-            {!isMobile && volume.kind && (
-              <Tooltip label={`Format: ${mapFormatToText(volume.kind)}`}>
-                <Tag>
-                  <FormatIcon format={volume.kind} />
-                </Tag>
-              </Tooltip>
-            )}
+            <div className="desktop-display-only">
+              {volume.kind && (
+                <Tooltip label={`Format: ${mapFormatToText(volume.kind)}`}>
+                  <Tag>
+                    <FormatIcon format={volume.kind} />
+                  </Tag>
+                </Tooltip>
+              )}
+            </div>
           </HStack>
         </Box>
       </Box>

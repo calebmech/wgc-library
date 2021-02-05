@@ -11,7 +11,6 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { useBookBag } from '../context/bookBag';
-import { useDatabase } from '../context/database';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { RequestBody } from '../pages/api/sendEmail';
 import AtSymbolIconSm from './icons/AtSymbolIconSm';
@@ -24,7 +23,6 @@ const EmailRegExp = RegExp(
 
 const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
   const { books, clearBag } = useBookBag();
-  const database = useDatabase();
 
   const [name, setName] = useLocalStorage<string>('name', '');
   const [email, setEmail] = useLocalStorage<string>('email', '');
@@ -37,11 +35,10 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
 
   const handleBookRequest = (event: any) => {
     event.preventDefault();
-    const booksWithInformation = books.map((key) => database[key]);
 
     setRequesting(true);
 
-    const body: RequestBody = { name, email, additionalInformation, books: booksWithInformation };
+    const body: RequestBody = { name, email, additionalInformation, books };
 
     fetch('/api/sendEmail', {
       method: 'POST',
@@ -89,6 +86,8 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
         <Input
           type="text"
           placeholder="Full name"
+          aria-label="Full name"
+          autoComplete="name"
           isRequired
           value={name}
           background={useColorModeValue('white', 'gray.700')}
@@ -101,6 +100,8 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
         <Input
           type="email"
           placeholder="Email"
+          aria-label="Email"
+          autoComplete="email"
           isRequired
           isInvalid={!isEmailValid}
           value={email}
@@ -111,6 +112,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
 
       <Textarea
         placeholder="Additional information"
+        aria-label="Additional information"
         value={additionalInformation}
         background={useColorModeValue('white', 'gray.700')}
         onChange={(event) => setAdditionalInformation(event.target.value)}

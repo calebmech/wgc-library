@@ -1,13 +1,109 @@
 import { Box, Button, Spinner, Text, VStack } from '@chakra-ui/react';
-import React from 'react';
+import algoliasearch, { SearchIndex } from 'algoliasearch/lite';
+import React, { useReducer } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
-import { useDebouncedCallback } from 'use-debounce';
-import { useDatabase } from '../context/database';
 import { Volume } from '../types';
-import { SearchWorker } from '../workers';
 import Card from './Card';
 
 const PAGE_SIZE = 8;
+
+const searchClient = algoliasearch('WV458H32HP', '9238085c928f4a26733df80b8f0a9a9c');
+
+const index = searchClient.initIndex('wgc-library');
+
+export const useIsMount = () => {
+  const isMountRef = React.useRef(true);
+  React.useEffect(() => {
+    isMountRef.current = false;
+  }, []);
+  return isMountRef.current;
+};
+
+export const search = ({
+  index,
+  query = '',
+  format,
+  category,
+  page = 0,
+}: {
+  index: SearchIndex;
+  query?: string;
+  format?: string;
+  category?: string;
+  page?: number;
+}) => {
+  const facetFilters = [];
+  if (category) {
+    facetFilters.push(`volumeInfo.categories:${category}`);
+  }
+  if (format) {
+    facetFilters.push(`kind:${format}`);
+  }
+
+  return index.search<Volume>(query, { facetFilters, page, hitsPerPage: PAGE_SIZE });
+};
+
+interface State {
+  isLoading: boolean;
+  pagesLoaded: number;
+  totalResults: number;
+  results: Volume[];
+}
+
+enum Actions {
+  NEW_QUERY = 'NEW_QUERY',
+  QUERY_LOADED = 'QUERY_LOADED',
+  NEXT_PAGE = 'NEW_PAGE',
+}
+
+interface NewQueryAction {
+  type: Actions.NEW_QUERY;
+}
+
+interface QueryLoadedAction {
+  type: Actions.QUERY_LOADED;
+  results: Volume[];
+  totalResults: number;
+}
+
+interface NextPageAction {
+  type: Actions.NEXT_PAGE;
+  results: Volume[];
+}
+
+type ActionTypes = NewQueryAction | QueryLoadedAction | NextPageAction;
+
+const reducer = (state: State, action: ActionTypes): State => {
+  switch (action.type) {
+    case Actions.NEW_QUERY: {
+      return {
+        isLoading: true,
+        pagesLoaded: 1,
+        totalResults: 0,
+        results: [],
+      };
+    }
+    case Actions.QUERY_LOADED: {
+      return {
+        isLoading: false,
+        pagesLoaded: 1,
+        totalResults: action.totalResults,
+        results: action.results,
+      };
+    }
+    case Actions.NEXT_PAGE: {
+      return {
+        ...state,
+        isLoading: false,
+        pagesLoaded: state.pagesLoaded + 1,
+        results: state.results.concat(action.results),
+      };
+    }
+    default: {
+      return state;
+    }
+  }
+};
 
 export default function Cards({
   query,
@@ -15,84 +111,68 @@ export default function Cards({
   format,
   category,
   setCategory,
+  initialResults,
+  initialTotalResults,
 }: {
   query: string;
   setQuery: (query: string) => void;
   format: string;
   category: string;
   setCategory: (category: string) => void;
+  initialResults: Volume[];
+  initialTotalResults: number;
 }) {
-  const database = useDatabase();
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [initialLoad, setInitialLoad] = React.useState(false);
+  const [state, dispatch] = React.useReducer(reducer, {
+    isLoading: false,
+    pagesLoaded: 1,
+    results: initialResults,
+    totalResults: initialTotalResults,
+  });
 
-  const searchWorker = React.useRef<Worker | null>(null);
-  if (!searchWorker.current) {
-    searchWorker.current = new SearchWorker();
-  }
+  const isMount = useIsMount();
+
+  const [debouncedQuery, setDebouncedQuery] = React.useState(query);
 
   React.useEffect(() => {
-    if (Object.keys(database).length > 0 && searchWorker.current) {
-      searchWorker.current.postMessage(database);
-      searchWorker.current.postMessage('');
+    if (!isMount) {
+      dispatch({ type: Actions.NEW_QUERY });
     }
-  }, [database]);
 
-  const [pagesLoaded, setPagesLoaded] = React.useState(1);
+    const timeout = setTimeout(() => setDebouncedQuery(query), 300);
 
-  const [results, setResults] = React.useState<Volume[]>([]);
-  const searchWorkerCallback = React.useCallback(
-    (event) => {
-      const newResults = event.data;
-
-      if (!initialLoad && newResults.length === 0) {
-        return;
-      }
-
-      unstable_batchedUpdates(() => {
-        setInitialLoad(true);
-        setResults(newResults);
-        setPagesLoaded(1);
-        setIsLoading(false);
-      });
-    },
-    [initialLoad]
-  );
+    return () => clearTimeout(timeout);
+  }, [query, category, format]);
 
   React.useEffect(() => {
-    setPagesLoaded(1);
-  }, [category, format]);
-
-  const queryCallback = useDebouncedCallback((query) => {
-    searchWorker.current?.postMessage(query);
-  }, 300);
-
-  React.useEffect(() => {
-    searchWorker.current?.addEventListener('message', searchWorkerCallback);
-
-    return () => searchWorker.current?.removeEventListener('message', searchWorkerCallback);
-  }, [initialLoad]);
-
-  React.useEffect(() => {
-    setIsLoading(true);
-    queryCallback.callback(query);
-  }, [query]);
+    if (!isMount) {
+      search({ index, query: debouncedQuery, category, format }).then(({ hits, nbHits }) =>
+        dispatch({ type: Actions.QUERY_LOADED, results: hits, totalResults: nbHits })
+      );
+    }
+  }, [debouncedQuery, category, format]);
 
   const loaderEl = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    var options = {
-      root: null,
-      rootMargin: '100px',
-    };
-    // initialize IntersectionObserver
-    // and attaching to Load More div
-    const observer = new IntersectionObserver((entities) => {
-      const target = entities[0];
-      if (target.isIntersecting) {
-        setPagesLoaded((page) => page + 1);
+    const observer = new IntersectionObserver(
+      ([target]) => {
+        if (target.isIntersecting && state.pagesLoaded * PAGE_SIZE < state.totalResults) {
+          search({
+            query,
+            format,
+            category,
+            page: state.pagesLoaded,
+            index,
+          }).then(({ hits }) => {
+            dispatch({ type: Actions.NEXT_PAGE, results: hits });
+          });
+        }
+      },
+      {
+        root: null,
+        rootMargin: '100px',
       }
-    }, options);
+    );
     if (loaderEl.current) {
       observer.observe(loaderEl.current);
     }
@@ -102,35 +182,23 @@ export default function Cards({
         observer.unobserve(loaderEl.current);
       }
     };
-  }, []);
-
-  const filteredResults = React.useMemo(() => {
-    const formatMatchingResults = format === '' ? results : results.filter((volume) => volume.kind === format);
-
-    const categoryMatchingResults =
-      category === ''
-        ? formatMatchingResults
-        : formatMatchingResults.filter((volume) =>
-            (volume.volumeInfo.categories ?? []).find((c) => c.startsWith(category))
-          );
-
-    return categoryMatchingResults;
-  }, [category, format, results]);
+  }, [state, query, format, category]);
 
   return (
     <div>
-      {!isLoading && (
+      {!state.isLoading && (
         <VStack>
-          {filteredResults.slice(0, PAGE_SIZE * pagesLoaded).map((book) => (
-            <Card volume={book} key={book.volumeInfo.key} setCategory={setCategory} setQuery={setQuery} />
+          {state.results.map((book) => (
+            <Card volume={book} key={book.key} setCategory={setCategory} setQuery={setQuery} />
           ))}
         </VStack>
       )}
 
-      {!isLoading &&
-        ((category.length > 0 && PAGE_SIZE * pagesLoaded > filteredResults.length) || results.length === 0) && (
-          <Text mt={filteredResults.length > 0 ? 8 : undefined} px={3} align="center">
-            No {filteredResults.length > 0 && 'more'} items found.
+      {!state.isLoading &&
+        ((category.length > 0 && PAGE_SIZE * state.pagesLoaded > state.results.length) ||
+          state.results.length === 0) && (
+          <Text mt={state.results.length > 0 ? 8 : undefined} px={3} align="center">
+            No {state.results.length > 0 && 'more'} items found.
             {category.length > 0 && !query.includes(category) && (
               <span>
                 {' '}
@@ -139,6 +207,7 @@ export default function Cards({
                   onClick={() => {
                     unstable_batchedUpdates(() => {
                       setQuery(category);
+                      setDebouncedQuery(category);
                       setCategory('');
                     });
                   }}
@@ -154,8 +223,8 @@ export default function Cards({
           </Text>
         )}
 
-      <Box textAlign="center" my={6} ref={loaderEl}>
-        {(isLoading || filteredResults.length > pagesLoaded * PAGE_SIZE) && <Spinner />}
+      <Box textAlign="center" my={6}>
+        {(state.isLoading || state.totalResults > state.pagesLoaded * PAGE_SIZE) && <Spinner ref={loaderEl} />}
       </Box>
     </div>
   );

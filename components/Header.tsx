@@ -30,33 +30,30 @@ export default function Header({ bagOpen, setBagOpen }: { bagOpen: boolean; setB
         flex="1"
         filter={useColorModeValue('', 'invert()')}
       >
-        <Image src="/logo.png" height="540" width="770" layout="responsive" />
+        <Image src="/logo.png" height="540" width="770" layout="responsive" alt="Winona Gospel Church logo" />
       </Heading>
       <Box display="flex" flex="1" flexDir="column" justifyContent="top" alignItems="flex-end">
-        {isMobile && (
-          <Box position="relative">
-            <IconButton
-              aria-label="Book bag"
-              className="relative
-              "
-              onClick={() => setBagOpen(!bagOpen)}
-              icon={<BagIcon height="24" />}
-              variant="ghost"
-            ></IconButton>
-            {books.length > 0 && (
-              <Box
-                w={3}
-                h={3}
-                background="red.500"
-                position="absolute"
-                rounded="full"
-                top="6px"
-                right="6px"
-                className="w-3 text-xs h-3 block text-white bg-red-600 absolute rounded-full -top-0.5 -right-0.5"
-              />
-            )}
-          </Box>
-        )}
+        <Box position="relative" className="mobile-display-only">
+          <IconButton
+            aria-label="Book bag"
+            className="relative"
+            onClick={() => setBagOpen(!bagOpen)}
+            icon={<BagIcon height="24" />}
+            variant="ghost"
+          ></IconButton>
+          {books.length > 0 && (
+            <Box
+              w={3}
+              h={3}
+              background="red.500"
+              position="absolute"
+              rounded="full"
+              top="6px"
+              right="6px"
+              className="w-3 text-xs h-3 block text-white bg-red-600 absolute rounded-full -top-0.5 -right-0.5"
+            />
+          )}
+        </Box>
       </Box>
     </Box>
   );

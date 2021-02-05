@@ -85,8 +85,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const libraryMsg: MailDataRequired = {
     to: {
       name: 'Winona Gospel Church Library',
-      email: 'cmech1@gmail.com',
-    }, // Change to your recipient
+      email: libraryEmail,
+    },
     replyTo: email,
     from: {
       email: libraryEmail,

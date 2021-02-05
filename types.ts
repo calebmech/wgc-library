@@ -1,5 +1,3 @@
-export type Database = { [isbn: string]: Volume };
-
 export interface Volume {
   kind?: Kind;
   id?: string;
@@ -12,6 +10,8 @@ export interface Volume {
   error?: TopLevelError;
   layerInfo?: LayerInfo;
   shelf?: string;
+  key: string;
+  highlight?: boolean;
 }
 
 export interface AccessInfo {

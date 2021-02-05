@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
+import { Volume } from '../types';
 
 interface BookBagContextType {
-  books: string[];
-  addBookToBag: (book: string) => void;
+  books: Volume[];
+  addBookToBag: (book: Volume) => void;
   removeBookFromBag: (book: string) => void;
   clearBag: () => void;
 }
@@ -17,20 +18,21 @@ const BookBagContext = React.createContext<BookBagContextType>({
 interface ActionType {
   type: string;
   isbn?: string;
+  items?: Volume[];
 }
 
-function reducer(books: string[] = [], { type, isbn }: ActionType) {
+function reducer(books: Volume[] = [], { type, isbn, items }: ActionType) {
   switch (type) {
     case 'ADD_BOOK': {
-      if (isbn && !books.includes(isbn)) {
-        return books.concat(isbn);
+      if (items) {
+        return books.concat(items.filter((item) => !books.includes(item)));
       }
 
       return books;
     }
 
     case 'REMOVE_BOOK': {
-      return books.filter((book) => book !== isbn);
+      return books.filter((book) => book.key !== isbn);
     }
 
     case 'CLEAR_BAG': {
@@ -43,19 +45,14 @@ function reducer(books: string[] = [], { type, isbn }: ActionType) {
 }
 
 export default function BookBagProvider(props: any) {
-  const storedBooks = globalThis.window?.localStorage.getItem('bag');
+  const [books, dispatch] = React.useReducer(reducer, []);
 
-  const [books, dispatch] = React.useReducer(reducer, storedBooks ? JSON.parse(storedBooks) : []);
-
-  useEffect(() => {
-    globalThis.window?.localStorage.setItem('bag', JSON.stringify(books));
-  }, [books]);
-
-  const addBookToBag = (isbn: string) =>
-    dispatch({
+  const addBookToBag = (...items: Volume[]) => {
+    return dispatch({
       type: 'ADD_BOOK',
-      isbn,
+      items,
     });
+  };
 
   const removeBookFromBag = (isbn: string) =>
     dispatch({
@@ -64,6 +61,20 @@ export default function BookBagProvider(props: any) {
     });
 
   const clearBag = () => dispatch({ type: 'CLEAR_BAG' });
+
+  useEffect(() => {
+    const storedBooks = localStorage.getItem('bag');
+    const parsedStoredBooks = storedBooks ? JSON.parse(storedBooks) : [];
+    const verifiedStoredBooks = parsedStoredBooks.find((book: any) => typeof book === 'string')
+      ? []
+      : parsedStoredBooks;
+
+    addBookToBag(...verifiedStoredBooks);
+  }, []);
+
+  useEffect(() => {
+    globalThis.window?.localStorage.setItem('bag', JSON.stringify(books));
+  }, [books]);
 
   const value = {
     books,

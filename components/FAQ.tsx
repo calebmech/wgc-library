@@ -33,7 +33,7 @@ const faqItems: FAQItem[] = [
   {
     heading: 'How will I get my library items?',
     body:
-      '<p>Your items will be placed in your mailbox in the church foyer, or in a labelled bag in the foyer. You will need to come into the church during office hours to pick them up.</p><p>During times when we are able to meet in person for worship services, your items will generally be left on your seat in the sanctuary.</p>',
+      '<p>Your items will be placed in the church foyer, either in your mailbox or in a labelled bag. You will need to come into the church during office hours to pick them up.</p><p>During times when we are able to meet in person for worship services, your items will generally be left on your seat in the sanctuary.</p>',
   },
   {
     heading: 'How will I return library items?',
@@ -47,7 +47,12 @@ const faqItems: FAQItem[] = [
   {
     heading: 'How long can I keep my library items?',
     body:
-      'Keep your items as long as you are making use of them. Just so we don’t lose track, we will plan to send you are reminder if your items have not been returned after one month.',
+      'Keep your items as long as you are making use of them. Just so we don’t lose track, we will plan to send you a reminder if your items have not been returned after one month.',
+  },
+  {
+    heading: 'What precautions are being taken related to the pandemic?',
+    body:
+      '<p>When preparing items for pickup, the volunteer will be wearing a mask and cleaning their hands regularly.</p><p>Returned books will be ‘quarantined’ for at least a week before being recirculated or reshelved. Returned CD and DVD cases will also be cleaned with disinfectant wipes before being recirculated or reshelved.</p>',
   },
   {
     heading: 'What if I have a question not on this list?',
