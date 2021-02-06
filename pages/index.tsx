@@ -96,6 +96,7 @@ export default function Home({
       <Flex background={useColorModeValue('gray.50', 'gray.800')} minHeight="100vh">
         <Container maxW="768px" mt={3}>
           <Header bagOpen={isOpen} setBagOpen={onOpen} />
+          <link rel="preconnect" href="https://WV458H32HP-dsn.algolia.net" crossOrigin="true" />
 
           <VStack mb={6} mt={2} spacing={3}>
             <InputGroup role="search">
