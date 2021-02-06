@@ -29,7 +29,14 @@ export default function Header({ bagOpen, setBagOpen }: { bagOpen: boolean; setB
         ml={0}
         filter={useColorModeValue('', 'invert()')}
       >
-        <Image src="/logo.png" height="89" width="127" layout="intrinsic" alt="Winona Gospel Church logo" />
+        <Image
+          src="/logo.png"
+          height="89"
+          width="127"
+          layout="intrinsic"
+          alt="Winona Gospel Church logo"
+          loading="eager"
+        />
       </Heading>
 
       <Box flex="1" display="flex" flexDir="column" justifyContent="top" alignItems="flex-end">
