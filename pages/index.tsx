@@ -1,54 +1,16 @@
-import {
-  Box,
-  Button,
-  CloseButton,
-  Container,
-  Flex,
-  Heading,
-  HStack,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Select,
-  useColorModeValue,
-  useDisclosure,
-  VStack,
-} from '@chakra-ui/react';
-import algoliasearch from 'algoliasearch/lite';
+import { Container, Flex, useColorModeValue, useDisclosure } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
-import dynamic from 'next/dynamic';
-import { useRouter } from 'next/router';
 import React from 'react';
-import BookBagForm from '../components/BookBagForm';
-import Cards, { search } from '../components/Cards';
-import CategoriesSelector from '../components/CategoriesSelector';
+import BookBagContainer from '../components/BookBag/BookBagContainer';
 import Header from '../components/Header';
-import BookBagProvider from '../context/bookBag';
-import { useIsDesktop } from '../hooks/useIsMobile';
-import { Kind, Volume } from '../types';
-
-const LazyMobileBookBag = dynamic(() => import('../components/MobileBookBag'), {
-  ssr: false,
-});
-
-const LazyDesktopBookBag = dynamic(() => import('../components/DesktopBookBag'), {
-  ssr: false,
-});
-
-export interface Facet {
-  value: string;
-  count: number;
-}
-
-const getQueryValue = (queryValue: string | string[] | undefined): string => {
-  return Array.isArray(queryValue) ? queryValue[0] : queryValue ?? '';
-};
-
-const createQueryObject = (query: { [key: string]: string }): { [key: string]: string } => {
-  const entries = Object.entries(query);
-
-  return Object.fromEntries(entries.filter(([key, value]) => value.trim().length > 0));
-};
+import search, { createSearchIndex } from '../components/Search/algoliaSearch';
+import CategorySelector, { Category } from '../components/Search/CategorySelector';
+import FormatSelector from '../components/Search/FormatSelector';
+import Search from '../components/Search/Search';
+import SearchResults from '../components/Search/SearchResults';
+import BookBagProvider from '../context/BookBag';
+import SearchProvider from '../context/Search';
+import { Volume } from '../types';
 
 export default function Home({
   initialResults,
@@ -57,155 +19,42 @@ export default function Home({
 }: {
   initialResults: Volume[];
   initialTotalResults: number;
-  categories: Facet[];
+  categories: Category[];
 }) {
-  const router = useRouter();
-
-  const isDesktop = useIsDesktop();
-
-  const [query, setQuery] = React.useState(getQueryValue(router.query.q));
-  const [category, setCategory] = React.useState(getQueryValue(router.query.category));
-  const [format, setFormat] = React.useState(getQueryValue(router.query.format));
-
-  React.useEffect(() => {
-    setQuery(getQueryValue(router.query.q));
-    setCategory(getQueryValue(router.query.category));
-    setFormat(getQueryValue(router.query.format));
-  }, [router.query]);
-
-  React.useEffect(() => {
-    const id = setTimeout(() => {
-      router.push({ query: createQueryObject({ ...router.query, q: query, category, format }) }, undefined, {
-        shallow: true,
-      });
-    }, 500);
-
-    return () => clearTimeout(id);
-  }, [query, category, format]);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const searchRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    searchRef.current?.focus();
-  }, [searchRef]);
+  const { isOpen: bagOpen, onOpen: setBagOpen, onClose: setBagClose } = useDisclosure();
 
   return (
     <BookBagProvider>
       <Flex background={useColorModeValue('gray.50', 'gray.800')} minHeight="100vh">
         <Container maxW="768px" mt={3} as="main">
-          <Header bagOpen={isOpen} setBagOpen={onOpen} />
-          <link rel="preconnect" href="https://WV458H32HP-dsn.algolia.net" crossOrigin="true" />
+          <Header bagOpen={bagOpen} setBagOpen={setBagOpen} />
 
-          <VStack mb={6} mt={2} spacing={3}>
-            <InputGroup role="search">
-              <Input
-                placeholder="Search..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                size="lg"
-                aria-label="Search"
-                autoFocus
-                role="searchbox"
-                ref={searchRef}
-                background={useColorModeValue('white', 'gray.700')}
-              />
-              {query.length > 0 && (
-                <InputRightElement>
-                  <CloseButton alignSelf="flex-end" onClick={() => setQuery('')} />
-                </InputRightElement>
-              )}
-            </InputGroup>
-            <HStack spacing={2} width="100%">
-              {' '}
-              <Select
-                background={useColorModeValue('white', 'gray.700')}
-                value={format}
-                onChange={(event) => setFormat(event.target.value)}
-                width="100%"
-                aria-label="Format"
-              >
-                <option value="">All formats</option>
-                <option value={Kind.BooksVolume}>Book</option>
-                <option value={Kind.CD}>CD</option>
-                <option value={Kind.DVD}>DVD</option>
-              </Select>
-              <CategoriesSelector
-                categories={categories}
-                category={category}
-                setCategory={setCategory}
-                format={format}
-              />
-            </HStack>
-            {(format.length || category.length) && (
-              <Box w="full" textAlign="center">
-                <Button
-                  variant="link"
-                  size="sm"
-                  onClick={() => {
-                    setCategory('');
-                    setFormat('');
-                  }}
-                >
-                  Clear filters
-                </Button>
-              </Box>
-            )}
-          </VStack>
+          <SearchProvider>
+            <Search>
+              <FormatSelector />
+              <CategorySelector categories={categories} />
+            </Search>
 
-          <Cards
-            query={query}
-            setQuery={setQuery}
-            category={category}
-            setCategory={setCategory}
-            format={format}
-            initialResults={initialResults}
-            initialTotalResults={initialTotalResults}
-          />
+            <SearchResults initialResults={initialResults} initialTotalResults={initialTotalResults} />
+          </SearchProvider>
         </Container>
-        <Container
-          role="complementary"
-          className="desktop-display-only"
-          flex="0 0 33vw"
-          mx={0}
-          p={7}
-          w="full"
-          background={useColorModeValue('white', 'gray.900')}
-          top="0"
-          position="sticky"
-          minWidth="max-content"
-          display="flex"
-          flexDirection="column"
-          height="100vh"
-          borderLeftWidth="1px"
-        >
-          <Box display="flex" justifyContent="space-between" mb={5}>
-            <Heading as="h2" size="md">
-              Book bag
-            </Heading>
-          </Box>
-          {isDesktop ? <LazyDesktopBookBag /> : <LazyMobileBookBag isOpen={isOpen} onClose={onClose} />}
-          <Box as="footer" mt={4}>
-            <BookBagForm />
-          </Box>
-        </Container>
+
+        <BookBagContainer isOpen={bagOpen} onClose={setBagClose} />
       </Flex>
     </BookBagProvider>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const searchClient = algoliasearch('WV458H32HP', '9238085c928f4a26733df80b8f0a9a9c');
-  const index = searchClient.initIndex('wgc-library');
+  const searchIndex = createSearchIndex();
 
   const initialResults = await search({
-    index,
+    index: searchIndex,
     query: context.query.q as string | undefined,
     category: context.query.category as string | undefined,
     format: context.query.format as string | undefined,
   });
-  const categories = await index.searchForFacetValues('volumeInfo.categories', '*', {
+  const categories = await searchIndex.searchForFacetValues('volumeInfo.categories', '*', {
     maxFacetHits: 100,
   });
 

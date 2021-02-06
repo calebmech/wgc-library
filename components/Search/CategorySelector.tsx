@@ -1,18 +1,15 @@
 import React from 'react';
 import { Select, useColorModeValue } from '@chakra-ui/react';
-import { Facet } from '../pages';
+import { useSearch } from '../../context/Search';
 
-const CategoriesSelector = ({
-  categories,
-  category,
-  setCategory,
-  format,
-}: {
-  categories: Facet[];
-  category: string;
-  format: string;
-  setCategory: (category: string) => void;
-}) => {
+export interface Category {
+  value: string;
+  count: number;
+}
+
+export default function CategorySelector({ categories }: { categories: Category[] }) {
+  const { category, setCategory } = useSearch();
+
   return (
     <Select
       value={category}
@@ -35,6 +32,4 @@ const CategoriesSelector = ({
         ))}
     </Select>
   );
-};
-
-export default CategoriesSelector;
+}

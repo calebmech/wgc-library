@@ -1,6 +1,6 @@
 import { Box, CloseButton, HStack, Text, useColorModeValue } from '@chakra-ui/react';
 import Image from 'next/image';
-import { Book } from '../types';
+import { Book } from '../../types';
 
 const BookBagItem = ({ onRemove, book }: { book: Book; onRemove: () => void }) => (
   <HStack>

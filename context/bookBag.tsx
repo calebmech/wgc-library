@@ -44,7 +44,7 @@ function reducer(books: Volume[] = [], { type, isbn, items }: ActionType) {
   }
 }
 
-export default function BookBagProvider(props: any) {
+export default function BookBagProvider({ ...props }) {
   const [books, dispatch] = React.useReducer(reducer, []);
 
   const addBookToBag = (...items: Volume[]) => {

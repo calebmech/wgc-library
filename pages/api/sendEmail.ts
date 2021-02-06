@@ -1,6 +1,6 @@
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { mapFormatToText } from '../../components/Card';
+import { mapFormatToText } from '../../components/FormatIcon';
 import { Volume, Type } from '../../types';
 
 const libraryEmail = 'library@winonagospelchurch.org';

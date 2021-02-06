@@ -1,47 +1,11 @@
-import { Box, Button, List, ListItem, Spinner, Text, VStack } from '@chakra-ui/react';
-import algoliasearch, { SearchIndex } from 'algoliasearch/lite';
-import React, { useReducer } from 'react';
+import { Box, Button, List, ListItem, Spinner, Text } from '@chakra-ui/react';
+import React from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
-import { Volume } from '../types';
-import Card from './Card';
-
-const PAGE_SIZE = 8;
-
-const searchClient = algoliasearch('WV458H32HP', '9238085c928f4a26733df80b8f0a9a9c');
-
-const index = searchClient.initIndex('wgc-library');
-
-export const useIsMount = () => {
-  const isMountRef = React.useRef(true);
-  React.useEffect(() => {
-    isMountRef.current = false;
-  }, []);
-  return isMountRef.current;
-};
-
-export const search = ({
-  index,
-  query = '',
-  format,
-  category,
-  page = 0,
-}: {
-  index: SearchIndex;
-  query?: string;
-  format?: string;
-  category?: string;
-  page?: number;
-}) => {
-  const facetFilters = [];
-  if (category) {
-    facetFilters.push(`volumeInfo.categories:${category}`);
-  }
-  if (format) {
-    facetFilters.push(`kind:${format}`);
-  }
-
-  return index.search<Volume>(query, { facetFilters, page, hitsPerPage: PAGE_SIZE });
-};
+import { useSearch } from '../../context/Search';
+import useIsMount from '../../hooks/useIsMount';
+import { Volume } from '../../types';
+import search, { createSearchIndex, PAGE_SIZE } from './algoliaSearch';
+import SearchResult from './SearchResult';
 
 interface State {
   isLoading: boolean;
@@ -105,23 +69,16 @@ const reducer = (state: State, action: ActionTypes): State => {
   }
 };
 
-export default function Cards({
-  query,
-  setQuery,
-  format,
-  category,
-  setCategory,
+export default function SearchResults({
   initialResults,
   initialTotalResults,
 }: {
-  query: string;
-  setQuery: (query: string) => void;
-  format: string;
-  category: string;
-  setCategory: (category: string) => void;
   initialResults: Volume[];
   initialTotalResults: number;
 }) {
+  const searchIndex = React.useRef(createSearchIndex());
+  const { query, setQuery, format, category, setCategory } = useSearch();
+
   const [state, dispatch] = React.useReducer(reducer, {
     isLoading: false,
     pagesLoaded: 1,
@@ -145,7 +102,7 @@ export default function Cards({
 
   React.useEffect(() => {
     if (!isMount) {
-      search({ index, query: debouncedQuery, category, format }).then(({ hits, nbHits }) =>
+      search({ index: searchIndex.current, query: debouncedQuery, category, format }).then(({ hits, nbHits }) =>
         dispatch({ type: Actions.QUERY_LOADED, results: hits, totalResults: nbHits })
       );
     }
@@ -162,7 +119,7 @@ export default function Cards({
             format,
             category,
             page: state.pagesLoaded,
-            index,
+            index: searchIndex.current,
           }).then(({ hits }) => {
             dispatch({ type: Actions.NEXT_PAGE, results: hits });
           });
@@ -190,7 +147,7 @@ export default function Cards({
         <List spacing={2}>
           {state.results.map((book) => (
             <ListItem key={book.key}>
-              <Card volume={book} setCategory={setCategory} setQuery={setQuery} />
+              <SearchResult volume={book} setCategory={setCategory} setQuery={setQuery} />
             </ListItem>
           ))}
         </List>

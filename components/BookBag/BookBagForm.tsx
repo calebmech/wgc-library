@@ -10,12 +10,12 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React, { FormEvent } from 'react';
-import { useBookBag } from '../context/bookBag';
-import useLocalStorage from '../hooks/useLocalStorage';
-import { RequestBody } from '../pages/api/sendEmail';
-import AtSymbolIconSm from './icons/AtSymbolIconSm';
-import ClipboardListIconSm from './icons/ClipboardListIconSm';
-import UserIconSm from './icons/UserIconSm';
+import { useBookBag } from '../../context/BookBag';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import { RequestBody } from '../../pages/api/sendEmail';
+import AtSymbolIconSm from '../icons/AtSymbolIconSm';
+import ClipboardListIconSm from '../icons/ClipboardListIconSm';
+import UserIconSm from '../icons/UserIconSm';
 
 const EmailRegExp = RegExp(
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/

@@ -1,13 +1,13 @@
 import { Button, IconButton, Link, Tag, TagLeftIcon, Text, Tooltip, Wrap, WrapItem } from '@chakra-ui/react';
 import React from 'react';
-import { Book, Volume } from '../types';
-import { FormatIcon, mapFormatToText } from './Card';
-import BookIconSm from './icons/BookIconSm';
-import CalendarIconSm from './icons/CalendarIconSm';
-import GoogleIcon from './icons/GoogleIcon';
-import TagIconSm from './icons/TagIconSm';
+import { Book, Volume } from '../../types';
+import FormatIcon, { mapFormatToText } from '../FormatIcon';
+import BookIconSm from '../icons/BookIconSm';
+import CalendarIconSm from '../icons/CalendarIconSm';
+import GoogleIcon from '../icons/GoogleIcon';
+import TagIconSm from '../icons/TagIconSm';
 
-const CardDescription = ({
+export default function SearchResultDescription({
   book,
   volume,
   expanded,
@@ -21,7 +21,7 @@ const CardDescription = ({
   setCategory: (category: string) => void;
   showShortDescription?: boolean;
   showFormat?: boolean;
-}) => {
+}) {
   return (
     <>
       {(showShortDescription || expanded) && (
@@ -89,6 +89,4 @@ const CardDescription = ({
       )}
     </>
   );
-};
-
-export default CardDescription;
+}
