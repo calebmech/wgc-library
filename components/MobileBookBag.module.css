@@ -1,0 +1,14 @@
+.footer {
+  position: relative;
+}
+
+.footer::before {
+  display: block;
+  content: '';
+  width: 100%;
+  height: 30px;
+  position: absolute;
+  top: -30px;
+  left: 0;
+  background-image: linear-gradient(0, white, transparent);
+}

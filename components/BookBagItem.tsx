@@ -4,7 +4,7 @@ import { Book } from '../types';
 
 const BookBagItem = ({ onRemove, book }: { book: Book; onRemove: () => void }) => (
   <HStack>
-    <HStack w="full">
+    <HStack w="full" as="article">
       {book.imageLinks && (
         <Box position="relative" w={8} h={12} flex="none" mr={3}>
           <Image
@@ -17,12 +17,12 @@ const BookBagItem = ({ onRemove, book }: { book: Book; onRemove: () => void }) =
         </Box>
       )}
       <div>
-        <Text isTruncated noOfLines={1}>
+        <Text isTruncated noOfLines={1} as="h1">
           {book.title}
           {book.subtitle && `: ${book.subtitle}`}
         </Text>
         {book.authors && book.authors?.length > 0 && (
-          <Text isTruncated noOfLines={1} color={useColorModeValue('gray.600', 'gray.400')}>
+          <Text isTruncated noOfLines={1} color={useColorModeValue('gray.600', 'gray.400')} as="h2">
             {book.authors?.join(', ') || '\xa0'}
           </Text>
         )}

@@ -9,7 +9,7 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { FormEvent } from 'react';
 import { useBookBag } from '../context/bookBag';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { RequestBody } from '../pages/api/sendEmail';
@@ -33,7 +33,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
 
   const [requesting, setRequesting] = React.useState(false);
 
-  const handleBookRequest = (event: any) => {
+  const handleBookRequest = (event: FormEvent) => {
     event.preventDefault();
 
     setRequesting(true);
@@ -79,7 +79,7 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
   const isValid = books.length > 0 && name.trim().length > 0 && isEmailValid;
 
   return (
-    <VStack as="form" width="full" mt={4}>
+    <VStack width="full" as="form" onSubmit={handleBookRequest}>
       <InputGroup>
         <InputLeftElement pointerEvents="none" children={<UserIconSm fill={theme.colors.gray[500]} />} />
 
@@ -121,7 +121,6 @@ const BookBagForm = ({ onSubmit }: { onSubmit?: () => void }) => {
       <Button
         type="submit"
         disabled={requesting || !isValid}
-        onClick={handleBookRequest}
         isLoading={requesting}
         width="100%"
         colorScheme="blue"

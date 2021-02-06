@@ -1,4 +1,4 @@
-import { Box, Button, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, List, ListItem, Spinner, Text, VStack } from '@chakra-ui/react';
 import algoliasearch, { SearchIndex } from 'algoliasearch/lite';
 import React, { useReducer } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
@@ -187,11 +187,13 @@ export default function Cards({
   return (
     <div>
       {!state.isLoading && (
-        <VStack>
+        <List spacing={2}>
           {state.results.map((book) => (
-            <Card volume={book} key={book.key} setCategory={setCategory} setQuery={setQuery} />
+            <ListItem key={book.key}>
+              <Card volume={book} setCategory={setCategory} setQuery={setQuery} />
+            </ListItem>
           ))}
-        </VStack>
+        </List>
       )}
 
       {!state.isLoading &&

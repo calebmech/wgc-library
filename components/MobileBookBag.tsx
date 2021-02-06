@@ -10,6 +10,7 @@ import {
 import React from 'react';
 import BookBag from './BookBag';
 import BookBagForm from './BookBagForm';
+import styles from './MobileBookBag.module.css';
 
 const MobileBookBag = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
   <Modal isOpen={isOpen} onClose={onClose}>
@@ -21,7 +22,7 @@ const MobileBookBag = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
         <BookBag />
       </ModalBody>
 
-      <ModalFooter>
+      <ModalFooter className={styles.footer}>
         <BookBagForm onSubmit={onClose} />
       </ModalFooter>
     </ModalContent>

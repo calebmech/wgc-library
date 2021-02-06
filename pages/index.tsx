@@ -94,7 +94,7 @@ export default function Home({
   return (
     <BookBagProvider>
       <Flex background={useColorModeValue('gray.50', 'gray.800')} minHeight="100vh">
-        <Container maxW="768px" mt={3}>
+        <Container maxW="768px" mt={3} as="main">
           <Header bagOpen={isOpen} setBagOpen={onOpen} />
           <link rel="preconnect" href="https://WV458H32HP-dsn.algolia.net" crossOrigin="true" />
 
@@ -165,6 +165,7 @@ export default function Home({
           />
         </Container>
         <Container
+          role="complementary"
           className="desktop-display-only"
           flex="0 0 33vw"
           mx={0}
@@ -184,12 +185,10 @@ export default function Home({
               Book bag
             </Heading>
           </Box>
-          <Box display="flex" flex="1">
-            {isDesktop ? <LazyDesktopBookBag /> : <LazyMobileBookBag isOpen={isOpen} onClose={onClose} />}
-          </Box>
-          <footer>
+          {isDesktop ? <LazyDesktopBookBag /> : <LazyMobileBookBag isOpen={isOpen} onClose={onClose} />}
+          <Box as="footer" mt={4}>
             <BookBagForm />
-          </footer>
+          </Box>
         </Container>
       </Flex>
     </BookBagProvider>

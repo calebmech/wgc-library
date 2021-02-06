@@ -10,7 +10,7 @@ export default function BookBag() {
   const isMobile = useIsMobile();
 
   return (
-    <Box flex="1" overflowY="auto" height="30vh">
+    <Box flex="1" overflowY="auto" height={isMobile ? '30vh' : undefined}>
       {books.length === 0 && <p>There are no items in your bag.</p>}
       <UnorderedList ml="0" width={!isMobile ? '28vw' : undefined}>
         {books.map((book) => (
