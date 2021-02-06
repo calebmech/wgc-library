@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select, useColorModeValue } from '@chakra-ui/react';
-import { useSearch } from '../../context/Search';
+import { useSearch } from '../../context/SearchContext';
 
 export interface Category {
   value: string;

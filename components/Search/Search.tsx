@@ -10,7 +10,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';
-import { useSearch } from '../../context/Search';
+import { useSearch } from '../../context/SearchContext';
 
 const Search: React.FC = ({ children }) => {
   const { query, setQuery, format, setFormat, category, setCategory } = useSearch();

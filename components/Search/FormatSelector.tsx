@@ -1,6 +1,6 @@
 import { Select, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
-import { useSearch } from '../../context/Search';
+import { useSearch } from '../../context/SearchContext';
 import { Kind } from '../../types';
 
 export default function FormatSelector() {

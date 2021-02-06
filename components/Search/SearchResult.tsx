@@ -1,7 +1,7 @@
 import { Box, Button, Heading, HStack, Tag, Tooltip, useColorMode } from '@chakra-ui/react';
 import Image from 'next/image';
 import React from 'react';
-import { useBookBag } from '../../context/BookBag';
+import { useBookBag } from '../../context/BookBagContext';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { Volume } from '../../types';
 import CardDescription from './SearchResultDescription';

@@ -1,7 +1,7 @@
 import { Box, Button, Heading, IconButton, Tooltip, useColorModeValue, useDisclosure } from '@chakra-ui/react';
 import Image from 'next/image';
 import React from 'react';
-import { useBookBag } from '../context/BookBag';
+import { useBookBag } from '../context/BookBagContext';
 import FAQ from './FAQ';
 import BagIcon from './icons/BagIcon';
 import QuestionMarkCircleIcon from './icons/QuestionMarkCircleIcon';

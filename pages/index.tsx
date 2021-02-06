@@ -8,8 +8,8 @@ import CategorySelector, { Category } from '../components/Search/CategorySelecto
 import FormatSelector from '../components/Search/FormatSelector';
 import Search from '../components/Search/Search';
 import SearchResults from '../components/Search/SearchResults';
-import BookBagProvider from '../context/BookBag';
-import SearchProvider from '../context/Search';
+import BookBagProvider from '../context/BookBagContext';
+import SearchProvider from '../context/SearchContext';
 import { Volume } from '../types';
 
 export default function Home({
@@ -59,7 +59,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
 
   // Cache for one year (clears on redeploy)
-  context.res.setHeader('Cache-Control', 's-maxage=31536000, stale-while-revalidate');
+  context.res.setHeader('Cache-Control', 'max-age=0, s-maxage=31536000');
 
   return {
     props: {

@@ -1,6 +1,6 @@
 import { Box, ListItem, UnorderedList } from '@chakra-ui/react';
 import React from 'react';
-import { useBookBag } from '../../context/BookBag';
+import { useBookBag } from '../../context/BookBagContext';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import BookBagItem from './BookBagItem';
 

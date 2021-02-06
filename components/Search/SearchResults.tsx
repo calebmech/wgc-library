@@ -1,7 +1,7 @@
 import { Box, Button, List, ListItem, Spinner, Text } from '@chakra-ui/react';
 import React from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
-import { useSearch } from '../../context/Search';
+import { useSearch } from '../../context/SearchContext';
 import useIsMount from '../../hooks/useIsMount';
 import { Volume } from '../../types';
 import search, { createSearchIndex, PAGE_SIZE } from './algoliaSearch';
