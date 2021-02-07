@@ -4,7 +4,7 @@ import { Volume } from '../../types';
 export const PAGE_SIZE = 8;
 
 export function createSearchIndex() {
-  return algoliasearch('WV458H32HP', '9238085c928f4a26733df80b8f0a9a9c').initIndex('wgc-library');
+  return algoliasearch('WV458H32HP', '074f34b4376eb637fbbf43492515e8d3').initIndex('wgc-library');
 }
 
 export default function search({
