@@ -1,7 +1,6 @@
-import React from 'react';
 import {
-  Button,
-  Text,
+  Heading,
+  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -9,10 +8,10 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Heading,
+  Text,
   UnorderedList,
-  ListItem,
 } from '@chakra-ui/react';
+import React from 'react';
 
 interface FAQItem {
   heading: string;
