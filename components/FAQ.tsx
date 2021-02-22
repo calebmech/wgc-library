@@ -42,7 +42,7 @@ const faqItems: FAQItem[] = [
   {
     heading: 'How will I return library items?',
     body:
-      'Place them in the labelled bin on the lower level of the church foyer. When we are meeting in person, this will be to your left just as you enter them main front doors.',
+      'Place them in the labelled bin on the lower level of the church foyer. When we are meeting in person, this will be to your left just as you enter the main front doors.',
   },
   {
     heading: 'What if I can’t find the item I’m looking for?',
