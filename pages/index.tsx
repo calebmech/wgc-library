@@ -59,7 +59,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
 
   // Cache for one year (clears on redeploy)
-  context.res.setHeader('Cache-Control', 'max-age=0, s-maxage=31536000');
+  context.res.setHeader('Cache-Control', 's-maxage=31536000, stale-while-revalidate');
 
   return {
     props: {
