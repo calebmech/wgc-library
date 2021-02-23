@@ -145,11 +145,13 @@ export default function SearchResults({
     <div>
       {!state.isLoading && (
         <List spacing={2}>
-          {state.results.map((book) => (
-            <ListItem key={book.key}>
-              <SearchResult volume={book} setCategory={setCategory} setQuery={setQuery} />
-            </ListItem>
-          ))}
+          {state.results
+            .filter((book) => book.error === undefined)
+            .map((book) => (
+              <ListItem key={book.key}>
+                <SearchResult volume={book} setCategory={setCategory} setQuery={setQuery} />
+              </ListItem>
+            ))}
         </List>
       )}
 
