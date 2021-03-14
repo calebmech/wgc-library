@@ -70,7 +70,7 @@ export default function SearchResultDescription({
                   <TagLeftIcon>
                     <CalendarIconSm />
                   </TagLeftIcon>
-                  {new Date(item.releaseDate).getFullYear()}
+                  {item.releaseDate.slice(0, 4)}
                 </Tag>
               </Tooltip>
             </WrapItem>
