@@ -37,8 +37,6 @@ const createQueryObject = (query: { [key: string]: string | undefined }): { [key
 export default function SearchProvider({ ...props }) {
   const router = useRouter();
 
-  console.log(router.query.category);
-
   const [query, setQuery] = React.useState<string>(getQueryValue(router.query.q) ?? '');
   const [category, setCategory] = React.useState<Category | undefined>(
     getQueryValue(router.query.category) as Category | undefined
