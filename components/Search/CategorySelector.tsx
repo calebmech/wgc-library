@@ -1,35 +1,24 @@
 import React from 'react';
 import { Select, useColorModeValue } from '@chakra-ui/react';
 import { useSearch } from '../../context/SearchContext';
+import { Categories, Category } from '../../types';
 
-export interface Category {
-  value: string;
-  count: number;
-}
-
-export default function CategorySelector({ categories }: { categories: Category[] }) {
+export default function CategorySelector() {
   const { category, setCategory } = useSearch();
 
   return (
     <Select
-      value={category}
-      onChange={(event) => setCategory(event.target.value)}
+      value={category ?? ''}
+      onChange={(event) => setCategory(event.target.value ? (event.target.value as Category) : undefined)}
       background={useColorModeValue('white', 'gray.700')}
       aria-label="Category"
     >
       <option value="">All categories</option>
-      {category && !categories.find((c) => c.value === category) && (
-        <option value={category} key={category}>
-          {category}
+      {Object.values(Category).map((c) => (
+        <option key={c} value={c}>
+          {Categories[c]}
         </option>
-      )}
-      {categories
-        .sort((a, b) => a.value.localeCompare(b.value))
-        .map((c) => (
-          <option value={c.value} key={c.value}>
-            {c.value} ({c.count})
-          </option>
-        ))}
+      ))}
     </Select>
   );
 }

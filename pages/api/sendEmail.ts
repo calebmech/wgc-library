@@ -1,7 +1,7 @@
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { mapFormatToText } from '../../components/FormatIcon';
-import { Volume, Type } from '../../types';
+import { mapTypeToText } from '../../components/FormatIcon';
+import { Item } from '../../types';
 
 const libraryEmail = 'library@winonagospelchurch.org';
 
@@ -11,7 +11,7 @@ export interface RequestBody {
   name: string;
   email: string;
   additionalInformation?: string;
-  books: Volume[];
+  books: Item[];
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -56,14 +56,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       <ul>
         ${books
-          .map((book) => {
-            const { title, subtitle, authors } = book.volumeInfo;
+          .map((item) => {
+            const { title, subtitle, creator } = item;
 
             return `
             <li>
-              ${title.trim()} ${subtitle?.length ? `: ${subtitle.trim()}` : ''} ${
-              authors?.length ? `(${authors.join(', ')})` : ''
-            }
+              ${title} ${subtitle?.length ? `: ${subtitle}` : ''} ${creator}
             </li>
           `;
           })
@@ -97,23 +95,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       <p>${name} (${email}) has requested the following item${books.length == 1 ? '' : 's'}:</p>
       <ul>
         ${books
-          .map((book) => {
-            const { title, subtitle, authors } = book.volumeInfo;
+          .map((item) => {
+            const { title, subtitle, creator } = item;
 
             return `
             <li>
-              ${title.trim()} ${subtitle?.length ? `: ${subtitle.trim()}` : ''} ${
-              authors?.length ? `(${authors.join(', ')})` : ''
-            }
+              ${title} ${subtitle?.length ? `: ${subtitle}` : ''} ${creator}
 
               <ul>
-                <li>Format: ${mapFormatToText(book.kind)}</li>
-                ${book.shelf ? `<li>Shelf: ${book.shelf}</li>` : ''}
+                <li>Format: ${mapTypeToText(item.type)}</li>
                 ${(() => {
-                  const isbn = book.volumeInfo.industryIdentifiers?.find((id) => id.type === Type.Isbn13);
-
-                  if (isbn) {
-                    return `<li>ISBN: ${isbn.identifier}</li>`;
+                  if (item.isbn) {
+                    return `<li>ISBN: ${item.isbn}</li>`;
                   }
 
                   return '';

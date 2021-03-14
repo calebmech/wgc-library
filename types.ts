@@ -1,214 +1,94 @@
-export interface Volume {
-  kind?: Kind;
-  id?: string;
-  etag?: string;
-  selfLink?: string;
-  volumeInfo: VolumeInfo;
-  saleInfo?: SaleInfo;
-  accessInfo?: AccessInfo;
-  searchInfo?: SearchInfo;
-  error?: TopLevelError;
-  layerInfo?: LayerInfo;
-  shelf?: string;
-  key: string;
-  highlight?: boolean;
-}
-
-export interface AccessInfo {
-  country: Country;
-  viewability: Viewability;
-  embeddable: boolean;
-  publicDomain: boolean;
-  textToSpeechPermission: TextToSpeechPermission;
-  epub: Epub;
-  pdf: Epub;
-  webReaderLink: string;
-  accessViewStatus: AccessViewStatus;
-  quoteSharingAllowed: boolean;
-}
-
-export enum AccessViewStatus {
-  None = 'NONE',
-  Sample = 'SAMPLE',
-}
-
-export enum Country {
-  CA = 'CA',
-}
-
-export interface Epub {
-  isAvailable: boolean;
-  acsTokenLink?: string;
-}
-
-export enum TextToSpeechPermission {
-  Allowed = 'ALLOWED',
-  AllowedForAccessibility = 'ALLOWED_FOR_ACCESSIBILITY',
-}
-
-export enum Viewability {
-  NoPages = 'NO_PAGES',
-  Partial = 'PARTIAL',
-}
-
-export interface TopLevelError {
-  code: number;
-  message: string;
-  errors: ErrorElement[];
-  status: Status;
-}
-
-export interface ErrorElement {
-  message: string;
-  domain: Domain;
-  reason: Reason;
-}
-
-export enum Domain {
-  Global = 'global',
-}
-
-export enum Reason {
-  RateLimitExceeded = 'rateLimitExceeded',
-}
-
-export enum Status {
-  ResourceExhausted = 'RESOURCE_EXHAUSTED',
-}
-
-export enum Kind {
-  BooksVolume = 'books#volume',
-  CD = 'cd',
-  DVD = 'dvd',
-}
-
-export interface LayerInfo {
-  layers: Layer[];
-}
-
-export interface Layer {
-  layerId: string;
-  volumeAnnotationsVersion: string;
-}
-
-export interface SaleInfo {
-  country: Country;
-  saleability: Saleability;
-  isEbook: boolean;
-  listPrice?: SaleInfoListPrice;
-  retailPrice?: SaleInfoListPrice;
-  buyLink?: string;
-  offers?: Offer[];
-}
-
-export interface SaleInfoListPrice {
-  amount: number;
-  currencyCode: CurrencyCode;
-}
-
-export enum CurrencyCode {
-  CAD = 'CAD',
-}
-
-export interface Offer {
-  finskyOfferType: number;
-  listPrice: OfferListPrice;
-  retailPrice: OfferListPrice;
-  giftable: boolean;
-}
-
-export interface OfferListPrice {
-  amountInMicros: number;
-  currencyCode: CurrencyCode;
-}
-
-export enum Saleability {
-  ForSale = 'FOR_SALE',
-  NotForSale = 'NOT_FOR_SALE',
-}
-
-export interface SearchInfo {
-  textSnippet: string;
-}
-
-export type Book = VolumeInfo;
-
-export interface VolumeInfo {
-  title: string;
-  authors?: string[];
-  publisher?: string;
-  publishedDate?: string;
-  description?: string;
-  industryIdentifiers?: IndustryIdentifier[];
-  readingModes: ReadingModes;
-  pageCount?: number;
-  printType: PrintType;
-  categories?: string[];
-  maturityRating: MaturityRating;
-  allowAnonLogging: boolean;
-  contentVersion: string;
-  imageLinks?: ImageLinks;
-  language: Language;
-  previewLink: string;
-  infoLink: string;
-  canonicalVolumeLink: string;
-  printedPageCount?: number;
-  panelizationSummary?: PanelizationSummary;
-  dimensions?: Dimensions;
-  averageRating?: number;
-  ratingsCount?: number;
+export interface Item {
+  objectID: string;
+  ascensionNumber?: number;
+  audience?: string;
+  group?: Group;
+  category?: Category;
+  creator?: string;
+  genres?: string;
+  deweyDecimal?: string;
+  type?: ItemType;
+  isbn?: string;
+  pages?: number;
+  releaseDate?: string;
+  title?: string;
   subtitle?: string;
-  comicsContent?: boolean;
-  mainCategory?: string;
-  key: string;
+  synopsis?: string;
+  url?: string;
+  imageUrl?: string;
+  amazonID?: string;
+  highlighted: boolean;
 }
 
-export interface Dimensions {
-  height: string;
-  width?: string;
-  thickness?: string;
+export enum ItemType {
+  book = 'Book',
+  movie = 'Movie',
+  music = 'Music',
 }
 
-export interface ImageLinks {
-  smallThumbnail: string;
-  thumbnail: string;
-  small?: string;
-  medium?: string;
-  large?: string;
-  extraLarge?: string;
+export enum Group {
+  adult = 'Adult',
+  youth = 'Youth',
+  family = 'Family',
+  junior = 'Junior',
+  childrens = 'Childrens',
+  ginosPick = "Gino's Pick",
 }
 
-export interface IndustryIdentifier {
-  type: Type;
-  identifier: string;
+export enum Category {
+  APOL = 'APOL',
+  ARC = 'ARC',
+  'B/St' = 'B/St',
+  BIB = 'BIB',
+  BIO = 'BIO',
+  CH = 'CH',
+  CHR = 'CHR',
+  COM = 'COM',
+  DEV = 'DEV',
+  DR = 'DR',
+  EAS = 'EAS',
+  ENT = 'ENT',
+  ESC = 'ESC',
+  FIC = 'FIC',
+  HEA = 'HEA',
+  HIS = 'HIS',
+  LEA = 'LEA',
+  MAR = 'MAR',
+  MIS = 'MIS',
+  MOR = 'MOR',
+  MUS = 'MUS',
+  PAR = 'PAR',
+  REL = 'REL',
+  SCI = 'SCI',
+  TA = 'TA',
+  THE = 'THE',
 }
 
-export enum Type {
-  Isbn10 = 'ISBN_10',
-  Isbn13 = 'ISBN_13',
-  Other = 'OTHER',
-}
-
-export enum Language {
-  En = 'en',
-  ZhCN = 'zh-CN',
-}
-
-export enum MaturityRating {
-  Mature = 'MATURE',
-  NotMature = 'NOT_MATURE',
-}
-
-export interface PanelizationSummary {
-  containsEpubBubbles: boolean;
-  containsImageBubbles: boolean;
-}
-
-export enum PrintType {
-  Book = 'BOOK',
-}
-
-export interface ReadingModes {
-  text: boolean;
-  image: boolean;
-}
+export const Categories: { [category in Category]: string } = {
+  APOL: 'Apologetics',
+  ARC: 'Archives',
+  'B/St': 'Bible Study/St',
+  BIB: 'The Bible',
+  BIO: '(Auto)Biography (testimony)',
+  CH: 'Childrens',
+  CHR: 'Christian Living',
+  COM: 'Comedy',
+  DEV: 'Devotional literature',
+  DR: 'Drama',
+  EAS: 'Easy reading (learn to read)',
+  ENT: 'Entertainment (incl. crafts, food, games)',
+  ESC: 'Eschatology (future events, death)',
+  FIC: 'Fiction',
+  HEA: 'Health',
+  HIS: 'History of Christianity',
+  LEA: 'Church Leadership',
+  MAR: 'Marriage',
+  MIS: 'Missions',
+  MOR: 'Moral issues/Christian ethics',
+  MUS: 'Music',
+  PAR: 'Parenting',
+  REL: 'Other religions',
+  SCI: 'Science',
+  TA: 'Teaching Aids (Christian Education)',
+  THE: 'Theology (incl. sermons)',
+};

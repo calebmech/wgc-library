@@ -1,90 +1,111 @@
 import { Button, IconButton, Link, Tag, TagLeftIcon, Text, Tooltip, Wrap, WrapItem } from '@chakra-ui/react';
 import React from 'react';
-import { Book, Volume } from '../../types';
-import FormatIcon, { mapFormatToText } from '../FormatIcon';
+import { useSearch } from '../../context/SearchContext';
+import { Categories, Item } from '../../types';
+import TypeIcon, { mapTypeToText } from '../FormatIcon';
+import AmazonIcon from '../icons/AmazonIcon';
 import BookIconSm from '../icons/BookIconSm';
 import CalendarIconSm from '../icons/CalendarIconSm';
 import GoogleIcon from '../icons/GoogleIcon';
 import TagIconSm from '../icons/TagIconSm';
+import UserGroupIconSm from '../icons/UserGroupIconSm';
 
 export default function SearchResultDescription({
-  book,
-  volume,
+  item,
   expanded,
-  setCategory,
   showShortDescription = false,
   showFormat = false,
 }: {
-  book: Book;
-  volume: Volume;
+  item: Item;
   expanded: boolean;
-  setCategory: (category: string) => void;
   showShortDescription?: boolean;
   showFormat?: boolean;
 }) {
+  const { setType, setGroup, setCategory } = useSearch();
+
   return (
     <>
       {(showShortDescription || expanded) && (
         <Text isTruncated={!expanded} noOfLines={expanded ? undefined : 2}>
-          {book.description}
+          {item.synopsis}
         </Text>
       )}
       {expanded && (
         <Wrap my={3} spacing={2}>
-          {book.previewLink && (
+          {item.url && (
             <WrapItem>
               <Tooltip label="Google Books">
-                <Link href={book.previewLink} lineHeight="0" target="_blank">
+                <Link href={item.url} lineHeight="0" target="_blank" rel="noopener">
                   <IconButton aria-label="Google icon" icon={<GoogleIcon height="14" />} size="xs" />
                 </Link>
               </Tooltip>
             </WrapItem>
           )}
-          {showFormat && volume.kind && (
+          {item.amazonID && (
             <WrapItem>
-              <Tooltip label="Format">
-                <Tag>
-                  <TagLeftIcon>
-                    <FormatIcon format={volume.kind} />
-                  </TagLeftIcon>
-                  {mapFormatToText(volume.kind)}
-                </Tag>
+              <Tooltip label="Amazon">
+                <Link href={'https://www.amazon.ca/dp/' + item.amazonID} lineHeight="0" target="_blank" rel="noopener">
+                  <IconButton aria-label="Google icon" icon={<AmazonIcon height="14" />} size="xs" />
+                </Link>
               </Tooltip>
             </WrapItem>
           )}
-          {book.publishedDate && (
+          {showFormat && item.type && (
+            <WrapItem>
+              <Tooltip label="Format">
+                <Button
+                  onClick={() => setType(item.type)}
+                  size="xs"
+                  leftIcon={<TypeIcon format={item.type} height="12" />}
+                >
+                  {mapTypeToText(item.type)}
+                </Button>
+              </Tooltip>
+            </WrapItem>
+          )}
+          {item.releaseDate && (
             <WrapItem>
               <Tooltip label="Publish date">
                 <Tag>
                   <TagLeftIcon>
                     <CalendarIconSm />
                   </TagLeftIcon>
-                  {book.publishedDate}
+                  {new Date(item.releaseDate).getFullYear()}
                 </Tag>
               </Tooltip>
             </WrapItem>
           )}
-          {book.pageCount && (
+          {item.pages && (
             <WrapItem>
               <Tooltip label="Page count">
                 <Tag>
-                  <TagLeftIcon>
+                  <TagLeftIcon mt="2px">
                     <BookIconSm />
                   </TagLeftIcon>
-                  {book.pageCount}
+                  {item.pages}
                 </Tag>
               </Tooltip>
             </WrapItem>
           )}
-          {book.categories?.map((category) => (
-            <WrapItem key={category}>
+
+          {item.group && (
+            <WrapItem>
               <Tooltip label="Category">
-                <Button size="xs" onClick={() => setCategory(category)} leftIcon={<TagIconSm height="12" />}>
-                  {category}
+                <Button onClick={() => setGroup(item.group)} size="xs" leftIcon={<UserGroupIconSm height="12" />}>
+                  {item.group}
                 </Button>
               </Tooltip>
             </WrapItem>
-          ))}
+          )}
+          {item.category && Categories[item.category] && (
+            <WrapItem>
+              <Tooltip label="Category">
+                <Button onClick={() => setCategory(item.category)} size="xs" leftIcon={<TagIconSm height="12" />}>
+                  {Categories[item.category]}
+                </Button>
+              </Tooltip>
+            </WrapItem>
+          )}
         </Wrap>
       )}
     </>

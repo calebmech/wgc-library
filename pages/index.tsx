@@ -4,22 +4,18 @@ import React from 'react';
 import BookBagContainer from '../components/BookBag/BookBagContainer';
 import Header from '../components/Header';
 import search, { createSearchIndex } from '../components/Search/algoliaSearch';
-import CategorySelector, { Category } from '../components/Search/CategorySelector';
-import FormatSelector from '../components/Search/FormatSelector';
 import Search from '../components/Search/Search';
 import SearchResults from '../components/Search/SearchResults';
 import BookBagProvider from '../context/BookBagContext';
 import SearchProvider from '../context/SearchContext';
-import { Volume } from '../types';
+import { Category, Group, Item, ItemType } from '../types';
 
 export default function Home({
   initialResults,
   initialTotalResults,
-  categories,
 }: {
-  initialResults: Volume[];
+  initialResults: Item[];
   initialTotalResults: number;
-  categories: Category[];
 }) {
   const { isOpen: bagOpen, onOpen: setBagOpen, onClose: setBagClose } = useDisclosure();
 
@@ -30,10 +26,7 @@ export default function Home({
           <Header bagOpen={bagOpen} setBagOpen={setBagOpen} />
 
           <SearchProvider>
-            <Search>
-              <FormatSelector />
-              <CategorySelector categories={categories} />
-            </Search>
+            <Search />
 
             <SearchResults initialResults={initialResults} initialTotalResults={initialTotalResults} />
           </SearchProvider>
@@ -51,11 +44,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const initialResults = await search({
     index: searchIndex,
     query: context.query.q as string | undefined,
-    category: context.query.category as string | undefined,
-    format: context.query.format as string | undefined,
-  });
-  const categories = await searchIndex.searchForFacetValues('volumeInfo.categories', '*', {
-    maxFacetHits: 100,
+    category: context.query.category as Category | undefined,
+    group: context.query.group as Group | undefined,
+    type: context.query.type as ItemType | undefined,
   });
 
   // Cache for one year (clears on redeploy)
@@ -65,7 +56,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       initialResults: initialResults.hits,
       initialTotalResults: initialResults.nbHits,
-      categories: categories.facetHits,
     },
   };
 };

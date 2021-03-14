@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { Volume } from '../types';
+import { Item } from '../types';
 
 interface BookBagContextType {
-  books: Volume[];
-  addBookToBag: (book: Volume) => void;
+  books: Item[];
+  addBookToBag: (book: Item) => void;
   removeBookFromBag: (book: string) => void;
   clearBag: () => void;
 }
@@ -17,11 +17,11 @@ const BookBagContext = React.createContext<BookBagContextType>({
 
 interface ActionType {
   type: string;
-  isbn?: string;
-  items?: Volume[];
+  objectID?: string;
+  items?: Item[];
 }
 
-function reducer(books: Volume[] = [], { type, isbn, items }: ActionType) {
+function reducer(books: Item[] = [], { type, objectID, items }: ActionType) {
   switch (type) {
     case 'ADD_BOOK': {
       if (items) {
@@ -32,7 +32,7 @@ function reducer(books: Volume[] = [], { type, isbn, items }: ActionType) {
     }
 
     case 'REMOVE_BOOK': {
-      return books.filter((book) => book.key !== isbn);
+      return books.filter((book) => book.objectID !== objectID);
     }
 
     case 'CLEAR_BAG': {
@@ -47,17 +47,17 @@ function reducer(books: Volume[] = [], { type, isbn, items }: ActionType) {
 export default function BookBagProvider({ ...props }) {
   const [books, dispatch] = React.useReducer(reducer, []);
 
-  const addBookToBag = (...items: Volume[]) => {
+  const addBookToBag = (...items: Item[]) => {
     return dispatch({
       type: 'ADD_BOOK',
       items,
     });
   };
 
-  const removeBookFromBag = (isbn: string) =>
+  const removeBookFromBag = (objectID: string) =>
     dispatch({
       type: 'REMOVE_BOOK',
-      isbn,
+      objectID,
     });
 
   const clearBag = () => dispatch({ type: 'CLEAR_BAG' });

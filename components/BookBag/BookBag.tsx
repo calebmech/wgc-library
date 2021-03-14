@@ -19,9 +19,9 @@ export default function BookBag() {
     >
       {books.length === 0 && <p>There are no items in your bag.</p>}
       <UnorderedList ml="0" flex="1" listStyleType="none">
-        {books.map((book) => (
-          <ListItem key={book.key} mb={3} _last={{ paddingBottom: 4 }}>
-            <BookBagItem book={book.volumeInfo} onRemove={() => removeBookFromBag(book.key)} />
+        {books.map((item) => (
+          <ListItem key={item.objectID} mb={3} _last={{ paddingBottom: 4 }}>
+            <BookBagItem item={item} onRemove={() => removeBookFromBag(item.objectID)} />
           </ListItem>
         ))}
       </UnorderedList>

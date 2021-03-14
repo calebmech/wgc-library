@@ -8,12 +8,17 @@ import {
   InputRightElement,
   useColorModeValue,
   VStack,
+  Wrap,
+  WrapItem,
 } from '@chakra-ui/react';
 import React from 'react';
 import { useSearch } from '../../context/SearchContext';
+import CategorySelector from './CategorySelector';
+import FormatSelector from './FormatSelector';
+import GroupSelector from './GroupSelector';
 
-const Search: React.FC = ({ children }) => {
-  const { query, setQuery, format, setFormat, category, setCategory } = useSearch();
+const Search = () => {
+  const { query, setQuery, type, setType, category, setCategory, group, setGroup } = useSearch();
 
   const searchRef = React.useRef<HTMLInputElement>(null);
 
@@ -37,23 +42,32 @@ const Search: React.FC = ({ children }) => {
           ref={searchRef}
           background={useColorModeValue('white', 'gray.700')}
         />
-        {query.length > 0 && (
+        {query && (
           <InputRightElement>
             <CloseButton alignSelf="flex-end" mr={1} onClick={() => setQuery('')} />
           </InputRightElement>
         )}
       </InputGroup>
-      <HStack spacing={2} width="100%">
-        {children}
-      </HStack>
-      {(format.length || category.length) && (
+      <Wrap spacing={2} width="100%">
+        <WrapItem flex={2} minWidth="150px">
+          <FormatSelector />
+        </WrapItem>
+        <WrapItem flex={2} minWidth="150px">
+          <GroupSelector />
+        </WrapItem>
+        <WrapItem flex={3} minWidth="200px">
+          <CategorySelector />
+        </WrapItem>
+      </Wrap>
+      {(type || category || group) && (
         <Box w="full" textAlign="center">
           <Button
             variant="link"
             size="sm"
             onClick={() => {
-              setCategory('');
-              setFormat('');
+              setCategory(undefined);
+              setType(undefined);
+              setGroup(undefined);
             }}
           >
             Clear filters

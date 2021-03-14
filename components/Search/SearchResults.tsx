@@ -1,9 +1,8 @@
-import { Box, Button, List, ListItem, Spinner, Text } from '@chakra-ui/react';
+import { Box, List, ListItem, Spinner } from '@chakra-ui/react';
 import React from 'react';
-import { unstable_batchedUpdates } from 'react-dom';
 import { useSearch } from '../../context/SearchContext';
 import useIsMount from '../../hooks/useIsMount';
-import { Volume } from '../../types';
+import { Item } from '../../types';
 import search, { createSearchIndex, PAGE_SIZE } from './algoliaSearch';
 import SearchResult from './SearchResult';
 
@@ -11,7 +10,7 @@ interface State {
   isLoading: boolean;
   pagesLoaded: number;
   totalResults: number;
-  results: Volume[];
+  results: Item[];
 }
 
 enum Actions {
@@ -26,13 +25,13 @@ interface NewQueryAction {
 
 interface QueryLoadedAction {
   type: Actions.QUERY_LOADED;
-  results: Volume[];
+  results: Item[];
   totalResults: number;
 }
 
 interface NextPageAction {
   type: Actions.NEXT_PAGE;
-  results: Volume[];
+  results: Item[];
 }
 
 type ActionTypes = NewQueryAction | QueryLoadedAction | NextPageAction;
@@ -73,11 +72,11 @@ export default function SearchResults({
   initialResults,
   initialTotalResults,
 }: {
-  initialResults: Volume[];
+  initialResults: Item[];
   initialTotalResults: number;
 }) {
   const searchIndex = React.useRef(createSearchIndex());
-  const { query, setQuery, format, category, setCategory } = useSearch();
+  const { query, setQuery, type, group, category, setCategory } = useSearch();
 
   const [state, dispatch] = React.useReducer(reducer, {
     isLoading: false,
@@ -98,15 +97,15 @@ export default function SearchResults({
     const timeout = setTimeout(() => setDebouncedQuery(query), 300);
 
     return () => clearTimeout(timeout);
-  }, [query, category, format]);
+  }, [query, category, type]);
 
   React.useEffect(() => {
     if (!isMount) {
-      search({ index: searchIndex.current, query: debouncedQuery, category, format }).then(({ hits, nbHits }) =>
+      search({ index: searchIndex.current, query: debouncedQuery, category, type, group }).then(({ hits, nbHits }) =>
         dispatch({ type: Actions.QUERY_LOADED, results: hits, totalResults: nbHits })
       );
     }
-  }, [debouncedQuery, category, format]);
+  }, [debouncedQuery, category, type, group]);
 
   const loaderEl = React.useRef<HTMLDivElement>(null);
 
@@ -116,8 +115,9 @@ export default function SearchResults({
         if (target.isIntersecting && state.pagesLoaded * PAGE_SIZE < state.totalResults) {
           search({
             query,
-            format,
             category,
+            group,
+            type,
             page: state.pagesLoaded,
             index: searchIndex.current,
           }).then(({ hits }) => {
@@ -139,28 +139,26 @@ export default function SearchResults({
         observer.unobserve(loaderEl.current);
       }
     };
-  }, [state, query, format, category]);
+  }, [state, query, type, category]);
 
   return (
     <div>
       {!state.isLoading && (
         <List spacing={2}>
-          {state.results
-            .filter((book) => book.error === undefined)
-            .map((book) => (
-              <ListItem key={book.key}>
-                <SearchResult volume={book} setCategory={setCategory} setQuery={setQuery} />
-              </ListItem>
-            ))}
+          {state.results.map((item) => (
+            <ListItem key={item.objectID}>
+              <SearchResult item={item} />
+            </ListItem>
+          ))}
         </List>
       )}
 
-      {!state.isLoading &&
-        ((category.length > 0 && PAGE_SIZE * state.pagesLoaded > state.results.length) ||
+      {/* {!state.isLoading &&
+        ((category && PAGE_SIZE * state.pagesLoaded > state.results.length) ||
           state.results.length === 0) && (
           <Text mt={state.results.length > 0 ? 8 : undefined} px={3} align="center">
             No {state.results.length > 0 && 'more'} items found.
-            {category.length > 0 && !query.includes(category) && (
+            {category > 0 && !query.includes(category) && (
               <span>
                 {' '}
                 <Button
@@ -182,7 +180,7 @@ export default function SearchResults({
               </span>
             )}
           </Text>
-        )}
+        )} */}
 
       <Box textAlign="center" my={6}>
         {(state.isLoading || state.totalResults > state.pagesLoaded * PAGE_SIZE) && <Spinner ref={loaderEl} />}
