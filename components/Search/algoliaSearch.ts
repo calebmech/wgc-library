@@ -4,7 +4,7 @@ import { Category, Item, Group, ItemType } from '../../types';
 export const PAGE_SIZE = 8;
 
 export function createSearchIndex() {
-  return algoliasearch('WV458H32HP', '074f34b4376eb637fbbf43492515e8d3').initIndex('wgc-library-delicious');
+  return algoliasearch('WV458H32HP', '074f34b4376eb637fbbf43492515e8d3').initIndex('wgc-library');
 }
 
 export default function search({
