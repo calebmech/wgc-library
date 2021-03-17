@@ -14,6 +14,14 @@ export interface RequestBody {
   books: Item[];
 }
 
+function ifThenReturn(check: boolean, value: string) {
+  if (check) {
+    return value;
+  }
+
+  return '';
+}
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') {
     res.statusCode = 404;
@@ -61,20 +69,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
             return `
             <li>
-              ${title} ${subtitle?.length ? `: ${subtitle}` : ''} ${creator}
+              ${title}${ifThenReturn(!!subtitle, `: ${subtitle}`)} ${ifThenReturn(!!creator, `(${creator})`)}
             </li>
           `;
           })
           .join('\n')}
       </ul>
-      ${
-        additionalInformation && additionalInformation.trim().length > 0
-          ? `
-          <p>You also left the note:</p>
-          <blockquote>${additionalInformation}</blockquote>
-        `
-          : ''
-      }
+      ${ifThenReturn(
+        !!additionalInformation && additionalInformation.trim().length > 0,
+        `<h3>Additional information:</h3>
+        <blockquote>${additionalInformation}</blockquote>`
+      )}
 
       <p>You should receive an email within a week to confirm your items are ready for pickup. If you haven’t heard from us in that time, please leave a message at the church office (905-643-3116, or library@winonagospelchurch.org).</p>
     `,
@@ -100,33 +105,29 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
             return `
             <li>
-              ${title} ${subtitle?.length ? `: ${subtitle}` : ''} ${creator}
+              ${title}${ifThenReturn(!!subtitle, `: ${subtitle}`)} ${ifThenReturn(!!creator, `(${creator})`)}
 
               <ul>
-                <li>Format: ${mapTypeToText(item.type)}</li>
-                ${(() => {
-                  if (item.isbn) {
-                    return `<li>ISBN: ${item.isbn}</li>`;
+                <li>Type: ${item.group} ${mapTypeToText(item.type)}</li>
+                <li>Category: ${(() => {
+                  if (item.deweyDecimal) {
+                    return item.deweyDecimal;
                   }
 
-                  return '';
+                  return item.category;
                 })()}
+                <li>Ascension #: ${item.ascensionNumber}</li>
               </ul>
             </li>
           `;
           })
           .join('\n')}
       </ul>
-      ${
-        additionalInformation && additionalInformation.trim().length > 0
-          ? `<h3>Additional information:</h3>
+      ${ifThenReturn(
+        !!additionalInformation && additionalInformation.trim().length > 0,
+        `<h3>Additional information:</h3>
         <blockquote>${additionalInformation}</blockquote>`
-          : ''
-      }
-
-      <hr />
-
-      <p><i>Note: shelf numbers are given starting from the left-bottom-most shelf to the right-top-most shelf. For example, 9-5 would be the 9th shelf from the left and 5th shelf from the bottom (aka Gino's Picks).</i></p>
+      )}
     `,
   };
 
