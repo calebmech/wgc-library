@@ -6,6 +6,7 @@ import TypeIcon, { mapTypeToText } from '../FormatIcon';
 import AmazonIcon from '../icons/AmazonIcon';
 import BookIconSm from '../icons/BookIconSm';
 import CalendarIconSm from '../icons/CalendarIconSm';
+import CubeTransparentSm from '../icons/CubeTransparentSm';
 import GoogleIcon from '../icons/GoogleIcon';
 import TagIconSm from '../icons/TagIconSm';
 import UserGroupIconSm from '../icons/UserGroupIconSm';
@@ -21,7 +22,7 @@ export default function SearchResultDescription({
   showShortDescription?: boolean;
   showFormat?: boolean;
 }) {
-  const { setType, setGroup, setCategory } = useSearch();
+  const { setType, setGroup, setCategory, setQuery } = useSearch();
 
   return (
     <>
@@ -52,13 +53,26 @@ export default function SearchResultDescription({
           )}
           {showFormat && item.type && (
             <WrapItem>
-              <Tooltip label="Format">
+              <Tooltip label="Type">
                 <Button
                   onClick={() => setType(item.type)}
                   size="xs"
                   leftIcon={<TypeIcon format={item.type} height="12" />}
                 >
                   {mapTypeToText(item.type)}
+                </Button>
+              </Tooltip>
+            </WrapItem>
+          )}
+          {item.format && (
+            <WrapItem>
+              <Tooltip label="Format">
+                <Button
+                  onClick={() => setQuery(item.format ?? '')}
+                  size="xs"
+                  leftIcon={<CubeTransparentSm height="12" />}
+                >
+                  {item.format}
                 </Button>
               </Tooltip>
             </WrapItem>

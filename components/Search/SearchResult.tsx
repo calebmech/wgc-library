@@ -85,10 +85,10 @@ export default function SearchResult({ item }: { item: Item }) {
             </Button>
             <div className="desktop-display-only">
               {item.type && (
-                <Tooltip label={`Format: ${mapTypeToText(item.type)}`}>
+                <Tooltip label={`Type: ${mapTypeToText(item.type)}`}>
                   <IconButton
                     onClick={() => setType(item.type)}
-                    aria-label={`Format: ${mapTypeToText(item.type)}`}
+                    aria-label={`Type: ${mapTypeToText(item.type)}`}
                     icon={<TypeIcon format={item.type} height="12" />}
                     size="xs"
                   ></IconButton>
