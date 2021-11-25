@@ -1,5 +1,5 @@
 import { ChakraProvider, CSSReset, extendTheme, ThemeOverride } from '@chakra-ui/react';
-import type { AppProps } from 'next/dist/next-server/lib/router/router';
+import { AppProps } from 'next/dist/shared/lib/router/router';
 import Head from 'next/head';
 import './index.css';
 
