@@ -76,7 +76,7 @@ export default function SearchResults({
   initialTotalResults: number;
 }) {
   const searchIndex = React.useRef(createSearchIndex());
-  const { query, setQuery, type, group, category, setCategory } = useSearch();
+  const { query, type, group, category } = useSearch();
 
   const [state, dispatch] = React.useReducer(reducer, {
     isLoading: false,

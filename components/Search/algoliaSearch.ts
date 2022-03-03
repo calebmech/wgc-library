@@ -4,7 +4,10 @@ import { Category, Item, Group, ItemType } from '../../types';
 export const PAGE_SIZE = 8;
 
 export function createSearchIndex() {
-  return algoliasearch('WV458H32HP', '074f34b4376eb637fbbf43492515e8d3').initIndex('wgc-library');
+  return algoliasearch(
+    process.env.NEXT_PUBLIC_ALGOLIA_APP_NAME!,
+    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY!
+  ).initIndex(process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME!);
 }
 
 export default function search({
@@ -33,5 +36,9 @@ export default function search({
     facetFilters.push(`type:${type}`);
   }
 
-  return index.search<Item>(query, { facetFilters, page, hitsPerPage: PAGE_SIZE });
+  return index.search<Item>(query, {
+    facetFilters,
+    page,
+    hitsPerPage: PAGE_SIZE,
+  });
 }

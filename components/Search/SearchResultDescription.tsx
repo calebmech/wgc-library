@@ -1,4 +1,14 @@
-import { Button, IconButton, Link, Tag, TagLeftIcon, Text, Tooltip, Wrap, WrapItem } from '@chakra-ui/react';
+import {
+  Button,
+  IconButton,
+  Link,
+  Tag,
+  TagLeftIcon,
+  Text,
+  Tooltip,
+  Wrap,
+  WrapItem,
+} from '@chakra-ui/react';
 import React from 'react';
 import { useSearch } from '../../context/SearchContext';
 import { Categories, Item } from '../../types';
@@ -27,17 +37,24 @@ export default function SearchResultDescription({
   return (
     <>
       {(showShortDescription || expanded) && (
-        <Text isTruncated={!expanded} noOfLines={expanded ? undefined : 2}>
-          {item.synopsis}
-        </Text>
+        <Text noOfLines={expanded ? undefined : 2}>{item.synopsis}</Text>
       )}
       {expanded && (
         <Wrap my={3} spacing={2}>
           {item.url && (
             <WrapItem>
               <Tooltip label="Google Books">
-                <Link href={item.url} lineHeight="0" target="_blank" rel="noopener">
-                  <IconButton aria-label="Google icon" icon={<GoogleIcon height="14" />} size="xs" />
+                <Link
+                  href={item.url}
+                  lineHeight="0"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <IconButton
+                    aria-label="Google icon"
+                    icon={<GoogleIcon height="14" />}
+                    size="xs"
+                  />
                 </Link>
               </Tooltip>
             </WrapItem>
@@ -45,8 +62,17 @@ export default function SearchResultDescription({
           {item.amazonID && (
             <WrapItem>
               <Tooltip label="Amazon">
-                <Link href={'https://www.amazon.ca/dp/' + item.amazonID} lineHeight="0" target="_blank" rel="noopener">
-                  <IconButton aria-label="Google icon" icon={<AmazonIcon height="14" />} size="xs" />
+                <Link
+                  href={'https://www.amazon.ca/dp/' + item.amazonID}
+                  lineHeight="0"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <IconButton
+                    aria-label="Google icon"
+                    icon={<AmazonIcon height="14" />}
+                    size="xs"
+                  />
                 </Link>
               </Tooltip>
             </WrapItem>
@@ -105,7 +131,11 @@ export default function SearchResultDescription({
           {item.group && (
             <WrapItem>
               <Tooltip label="Category">
-                <Button onClick={() => setGroup(item.group)} size="xs" leftIcon={<UserGroupIconSm height="12" />}>
+                <Button
+                  onClick={() => setGroup(item.group)}
+                  size="xs"
+                  leftIcon={<UserGroupIconSm height="12" />}
+                >
                   {item.group}
                 </Button>
               </Tooltip>
@@ -114,7 +144,11 @@ export default function SearchResultDescription({
           {item.category && Categories[item.category] && (
             <WrapItem>
               <Tooltip label="Category">
-                <Button onClick={() => setCategory(item.category)} size="xs" leftIcon={<TagIconSm height="12" />}>
+                <Button
+                  onClick={() => setCategory(item.category)}
+                  size="xs"
+                  leftIcon={<TagIconSm height="12" />}
+                >
                   {Categories[item.category]}
                 </Button>
               </Tooltip>

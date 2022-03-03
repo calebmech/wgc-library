@@ -18,7 +18,16 @@ import FormatSelector from './FormatSelector';
 import GroupSelector from './GroupSelector';
 
 const Search = () => {
-  const { query, setQuery, type, setType, category, setCategory, group, setGroup } = useSearch();
+  const {
+    query,
+    setQuery,
+    type,
+    setType,
+    category,
+    setCategory,
+    group,
+    setGroup,
+  } = useSearch();
 
   const searchRef = React.useRef<HTMLInputElement>(null);
 
@@ -28,7 +37,12 @@ const Search = () => {
 
   return (
     <VStack mb={6} spacing={3}>
-      <link rel="preconnect" href="https://WV458H32HP-dsn.algolia.net" crossOrigin="true" />
+      <link
+        rel="preconnect"
+        href={`https://${process.env
+          .NEXT_PUBLIC_ALGOLIA_APP_NAME!}-dsn.algolia.net`}
+        crossOrigin="true"
+      />
 
       <InputGroup role="search">
         <Input
@@ -44,7 +58,11 @@ const Search = () => {
         />
         {query && (
           <InputRightElement>
-            <CloseButton alignSelf="flex-end" mr={1} onClick={() => setQuery('')} />
+            <CloseButton
+              alignSelf="flex-end"
+              mr={1}
+              onClick={() => setQuery('')}
+            />
           </InputRightElement>
         )}
       </InputGroup>

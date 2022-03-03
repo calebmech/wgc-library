@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { mapTypeToText } from '../../components/FormatIcon';
 import { Item } from '../../types';
 
-const libraryEmail = 'library@winonagospelchurch.org';
+const libraryEmail = process.env.NEXT_PUBLIC_LIBRARY_EMAIL!;
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
@@ -56,7 +56,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       email: libraryEmail,
       name: 'Winona Gospel Church Library',
     },
-    subject: `Your request of ${books.length} item${books.length == 1 ? '' : 's'} has been received!`,
+    subject: `Your request of ${books.length} item${
+      books.length == 1 ? '' : 's'
+    } has been received!`,
     html: `
       <p>Thank you for using the Winona Gospel Church library website!</p>      
 
@@ -69,7 +71,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
             return `
             <li>
-              ${title}${ifThenReturn(!!subtitle, `: ${subtitle}`)} ${ifThenReturn(!!creator, `(${creator})`)}
+              ${title}${ifThenReturn(
+              !!subtitle,
+              `: ${subtitle}`
+            )} ${ifThenReturn(!!creator, `(${creator})`)}
             </li>
           `;
           })
@@ -81,7 +86,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         <blockquote>${additionalInformation}</blockquote>`
       )}
 
-      <p>You should receive an email within a week to confirm your items are ready for pickup. If you haven’t heard from us in that time, please leave a message at the church office (905-643-3116, or library@winonagospelchurch.org).</p>
+      <p>You should receive an email within a week to confirm your items are ready for pickup. If you haven’t heard from us in that time, please leave a message at the church office (905-643-3116, or ${libraryEmail}).</p>
     `,
   };
 
@@ -95,9 +100,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       email: libraryEmail,
       name: 'Library Website',
     },
-    subject: `${name} has requested ${books.length} item${books.length == 1 ? '' : 's'}`,
+    subject: `${name} has requested ${books.length} item${
+      books.length == 1 ? '' : 's'
+    }`,
     html: `
-      <p>${name} (${email}) has requested the following item${books.length == 1 ? '' : 's'}:</p>
+      <p>${name} (${email}) has requested the following item${
+      books.length == 1 ? '' : 's'
+    }:</p>
       <ul>
         ${books
           .map((item) => {
@@ -105,7 +114,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
             return `
             <li>
-              ${title}${ifThenReturn(!!subtitle, `: ${subtitle}`)} ${ifThenReturn(!!creator, `(${creator})`)}
+              ${title}${ifThenReturn(
+              !!subtitle,
+              `: ${subtitle}`
+            )} ${ifThenReturn(!!creator, `(${creator})`)}
 
               <ul>
                 <li>Type: ${item.group} ${mapTypeToText(item.type)}</li>

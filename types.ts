@@ -11,6 +11,7 @@ export interface Item {
   isbn?: string;
   pages?: number;
   releaseDate?: string;
+  createdDate?: string;
   title?: string;
   subtitle?: string;
   synopsis?: string;

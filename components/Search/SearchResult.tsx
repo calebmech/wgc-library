@@ -1,4 +1,13 @@
-import { Box, Button, Heading, HStack, IconButton, Tag, Tooltip, useColorMode } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Heading,
+  HStack,
+  IconButton,
+  Tag,
+  Tooltip,
+  useColorMode,
+} from '@chakra-ui/react';
 import Image from 'next/image';
 import React from 'react';
 import { useBookBag } from '../../context/BookBagContext';
@@ -10,6 +19,7 @@ import BagIcon from '../icons/BagIconSm';
 import InfoIcon from '../icons/InfoIcon';
 import XCircleIcon from '../icons/XCircleIcon';
 import SearchResultDescription from './SearchResultDescription';
+import { images } from '../../next.config';
 
 export default function SearchResult({ item }: { item: Item }) {
   const { setQuery, setType } = useSearch();
@@ -20,8 +30,18 @@ export default function SearchResult({ item }: { item: Item }) {
 
   const { addBookToBag, removeBookFromBag, books } = useBookBag();
 
+  const canOptimizeCover = images.domains.some((domain) =>
+    item.imageUrl?.includes(domain)
+  );
+
   return (
-    <Box as="article" width="full" borderRadius="lg" borderWidth={1} background={isLightMode ? 'white' : 'gray.700'}>
+    <Box
+      as="article"
+      width="full"
+      borderRadius="lg"
+      borderWidth={1}
+      background={isLightMode ? 'white' : 'gray.700'}
+    >
       <Box width="full" display="flex">
         {item.imageUrl && (
           <Box
@@ -32,17 +52,33 @@ export default function SearchResult({ item }: { item: Item }) {
             maxWidth={24}
             background={isLightMode ? 'gray.100' : 'gray.900'}
           >
-            <Image src={item.imageUrl} layout="fill" objectFit="contain" alt="Book cover" />
+            <Image
+              src={item.imageUrl}
+              layout="fill"
+              objectFit="contain"
+              alt="Book cover"
+              unoptimized={!canOptimizeCover}
+            />
           </Box>
         )}
 
         <Box py={3} px={5} overflow="hidden">
           <Box as="header" mb={1}>
-            <Heading as="h1" size="md" fontSize="1.125em" fontWeight="semibold" mb={1}>
+            <Heading
+              as="h1"
+              size="md"
+              fontSize="1.125em"
+              fontWeight="semibold"
+              mb={1}
+            >
               {item.title?.trim()}
               {item.subtitle && `: ${item.subtitle}`}
             </Heading>
-            <Heading as="h2" size="sm" color={isLightMode ? 'gray.600' : 'gray.400'}>
+            <Heading
+              as="h2"
+              size="sm"
+              color={isLightMode ? 'gray.600' : 'gray.400'}
+            >
               {item.creator && (
                 <Button
                   variant="link"
@@ -57,7 +93,11 @@ export default function SearchResult({ item }: { item: Item }) {
           </Box>
 
           <div className="desktop-display-only">
-            <SearchResultDescription item={item} expanded={expanded} showShortDescription />
+            <SearchResultDescription
+              item={item}
+              expanded={expanded}
+              showShortDescription
+            />
           </div>
 
           <HStack as="footer" mt={3} mb={1}>
@@ -77,11 +117,20 @@ export default function SearchResult({ item }: { item: Item }) {
                 colorScheme="red"
                 leftIcon={<XCircleIcon height={16} />}
               >
-                Remove <span className="desktop-display-only">&nbsp;from bag</span>
+                Remove{' '}
+                <span className="desktop-display-only">&nbsp;from bag</span>
               </Button>
             )}
-            <Button onClick={() => setExpanded(!expanded)} size="xs" ml={1} leftIcon={<InfoIcon height={16} />}>
-              {expanded ? 'Less' : 'More'} <span className="not-small-mobile-display-only">&nbsp;information</span>
+            <Button
+              onClick={() => setExpanded(!expanded)}
+              size="xs"
+              ml={1}
+              leftIcon={<InfoIcon height={16} />}
+            >
+              {expanded ? 'Less' : 'More'}{' '}
+              <span className="not-small-mobile-display-only">
+                &nbsp;information
+              </span>
             </Button>
             <div className="desktop-display-only">
               {item.type && (
