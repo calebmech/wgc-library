@@ -210,8 +210,8 @@ export default function Update() {
                 Step 1: Upload CSV
               </Heading>
               <Text>
-                Export CSV of database from Delicious (make sure all fields are
-                included) Library and upload below
+                Export CSV of database from Delicious Library (making sure all
+                fields are included) and upload below
               </Text>
             </Box>
             <Button
