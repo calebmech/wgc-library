@@ -23,7 +23,7 @@ import { assign, Machine } from 'xstate';
 import ArrowSmLeft from '../components/icons/ArrowSmLeft';
 import CloudUploadIcon from '../components/icons/CloudUploadIcon';
 import SearchResultsPreview from '../components/Search/SearchResultsPreview';
-import { Group, Item } from '../types';
+import { Category, Group, Item, ItemType } from '../types';
 
 // Authenticate route
 export { getServerSideProps } from '../auth';
@@ -149,40 +149,41 @@ export default function Update() {
     const reader = new FileReader();
 
     reader.onloadstart = async () => {
-      send('PARSE_FILE');
+      await send('PARSE_FILE');
     };
 
     reader.onload = async () => {
       const binaryStr = reader.result;
 
       if (typeof binaryStr === 'string') {
-        const sheet = await csv({ ignoreEmpty: true }).fromString(binaryStr);
+        const sheet = await csv({
+          ignoreEmpty: true,
+          delimiter: ['\t', '{'],
+          quote: '{',
+        }).fromString(binaryStr);
 
-        const db: Item[] = sheet.map((item) => ({
-          objectID: item['unique item key'],
-          ascensionNumber: parseInt(item['Ascension #']) || undefined,
-          deweyDecimal: item['dewey decimal'],
-          audience: item.audience,
-          category: item.Category,
-          genres: item.genres,
-          group: item.Group,
-          creator: item.creator,
-          type: item['item type'],
+        const db: Item[] = sheet.map((item: Record<string, string>) => ({
+          objectID: item.IDNO,
+          ascensionNumber: parseInt(item.BARCODE) || undefined,
+          deweyDecimal: item.DEWEY,
+          category: item.CATEGORY as Category,
+          genres: item.SUBJECTS,
+          group: item.AUDIENCE as Group,
+          creator: item.AUTHOR,
+          type: item.TYPE as ItemType,
           isbn: item.ISBN,
-          pages: parseInt(item.pages) ? parseInt(item.pages) : undefined,
-          releaseDate: item['release date'],
-          createdDate: item['creation date'],
-          title: item.title,
-          subtitle: item.subtitle,
-          synopsis: item['primary synopsis'],
-          url: item.url,
-          imageUrl:
-            item['your image URL'] && item['your image URL'] !== ','
-              ? item['your image URL'].replace(',', '')
-              : undefined,
-          amazonID: item['amazon link'],
-          format: item.format,
-          highlighted: item.Group === Group.ginosPick,
+          pages: parseInt(item.PAGES) ? parseInt(item.PAGES) : undefined,
+          releaseDate: item.PUBLISHED,
+          createdDate: item.DATE_ADDED,
+          title: item.TITLE,
+          synopsis: item.SUMMARY,
+          url: item.URL,
+          imageUrl: item.IMAGE?.startsWith('http') ? item.IMAGE : undefined,
+          amazonID: item.AMAZON_LINK,
+          format: item.FORMAT,
+          barcode: item.BARCODE,
+          kitId: item.KIT_ID,
+          highlighted: item.AUDIENCE === Group.ginosPick,
         }));
 
         send('SUCCESSFUL_PARSE', { database: db });

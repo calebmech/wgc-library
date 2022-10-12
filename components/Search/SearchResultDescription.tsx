@@ -130,7 +130,7 @@ export default function SearchResultDescription({
 
           {item.group && (
             <WrapItem>
-              <Tooltip label="Category">
+              <Tooltip label="Audience">
                 <Button
                   onClick={() => setGroup(item.group)}
                   size="xs"

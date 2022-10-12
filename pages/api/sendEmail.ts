@@ -1,7 +1,6 @@
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { mapTypeToText } from '../../components/FormatIcon';
-import { Item } from '../../types';
+import { Categories, Item } from '../../types';
 
 const libraryEmail = process.env.NEXT_PUBLIC_LIBRARY_EMAIL!;
 
@@ -67,14 +66,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       <ul>
         ${books
           .map((item) => {
-            const { title, subtitle, creator } = item;
+            const { title, creator } = item;
 
             return `
             <li>
-              ${title}${ifThenReturn(
-              !!subtitle,
-              `: ${subtitle}`
-            )} ${ifThenReturn(!!creator, `(${creator})`)}
+              ${title} ${ifThenReturn(!!creator, `(${creator})`)}
             </li>
           `;
           })
@@ -110,25 +106,22 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       <ul>
         ${books
           .map((item) => {
-            const { title, subtitle, creator } = item;
+            const { title, creator } = item;
 
             return `
             <li>
-              ${title}${ifThenReturn(
-              !!subtitle,
-              `: ${subtitle}`
-            )} ${ifThenReturn(!!creator, `(${creator})`)}
+              ${title} ${ifThenReturn(!!creator, `(${creator})`)}
 
               <ul>
-                <li>Type: ${item.group} ${mapTypeToText(item.type)}</li>
-                <li>Category: ${(() => {
-                  if (item.deweyDecimal) {
-                    return item.deweyDecimal;
-                  }
-
-                  return item.category;
-                })()}
-                <li>Ascension #: ${item.ascensionNumber}</li>
+                <li>Audience: ${item.group}</li>
+                <li>Category: ${
+                  item.category ? Categories[item.category] : 'Unknown'
+                }</li>
+                <li>Dewey: ${item.deweyDecimal ?? 'Unknown'}</li>
+                <li>Type: ${item.type ?? 'Unknown'}</li>
+                <li>Format: ${item.format ?? 'Unknown'}</li>
+                <li>Barcode: ${item.barcode ?? 'Unknown'}</li>
+                <li>Kit #: ${item.kitId ?? 'None'}</li>
               </ul>
             </li>
           `;

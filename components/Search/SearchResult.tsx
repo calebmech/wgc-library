@@ -72,7 +72,6 @@ export default function SearchResult({ item }: { item: Item }) {
               mb={1}
             >
               {item.title?.trim()}
-              {item.subtitle && `: ${item.subtitle}`}
             </Heading>
             <Heading
               as="h2"
