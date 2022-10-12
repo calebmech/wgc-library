@@ -67,14 +67,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       <ul>
         ${books
           .map((item) => {
-            const { title, subtitle, creator } = item;
+            const { title, creator } = item;
 
             return `
             <li>
-              ${title}${ifThenReturn(
-              !!subtitle,
-              `: ${subtitle}`
-            )} ${ifThenReturn(!!creator, `(${creator})`)}
+              ${title} ${ifThenReturn(!!creator, `(${creator})`)}
             </li>
           `;
           })
@@ -110,14 +107,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       <ul>
         ${books
           .map((item) => {
-            const { title, subtitle, creator } = item;
+            const { title, creator } = item;
 
             return `
             <li>
-              ${title}${ifThenReturn(
-              !!subtitle,
-              `: ${subtitle}`
-            )} ${ifThenReturn(!!creator, `(${creator})`)}
+              ${title} ${ifThenReturn(!!creator, `(${creator})`)}
 
               <ul>
                 <li>Type: ${item.group} ${mapTypeToText(item.type)}</li>

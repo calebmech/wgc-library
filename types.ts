@@ -1,7 +1,6 @@
 export interface Item {
   objectID: string;
   ascensionNumber?: number;
-  audience?: string;
   group?: Group;
   category?: Category;
   creator?: string;
@@ -13,7 +12,6 @@ export interface Item {
   releaseDate?: string;
   createdDate?: string;
   title?: string;
-  subtitle?: string;
   synopsis?: string;
   url?: string;
   imageUrl?: string;
