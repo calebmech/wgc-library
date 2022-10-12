@@ -38,6 +38,7 @@ const BookBagItem = ({
         <Box width="0" flex="1">
           <Text isTruncated as="h1">
             {item.title}
+            {item.subtitle && `: ${item.subtitle}`}
           </Text>
           {item.creator && (
             <Text
