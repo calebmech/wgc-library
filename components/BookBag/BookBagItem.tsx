@@ -36,13 +36,13 @@ const BookBagItem = ({
           </Box>
         )}
         <Box width="0" flex="1">
-          <Text isTruncated as="h1">
+          <Text noOfLines={1} as="h1">
             {item.title}
             {item.subtitle && `: ${item.subtitle}`}
           </Text>
           {item.creator && (
             <Text
-              isTruncated
+              noOfLines={1}
               color={useColorModeValue('gray.600', 'gray.400')}
               as="h2"
             >
