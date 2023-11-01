@@ -165,6 +165,7 @@ export default function Update() {
         const db: Item[] = sheet.map((item: Record<string, string>) => ({
           objectID: item.IDNO,
           ascensionNumber: parseInt(item.BARCODE) || undefined,
+          series: item.SERIES,
           deweyDecimal: item.DEWEY,
           category: item.CATEGORY as Category,
           genres: item.SUBJECTS,

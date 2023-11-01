@@ -18,6 +18,7 @@ import BookIconSm from '../icons/BookIconSm';
 import CalendarIconSm from '../icons/CalendarIconSm';
 import CubeTransparentSm from '../icons/CubeTransparentSm';
 import GoogleIcon from '../icons/GoogleIcon';
+import RectangleStack from '../icons/RectangleStack';
 import TagIconSm from '../icons/TagIconSm';
 import UserGroupIconSm from '../icons/UserGroupIconSm';
 
@@ -150,6 +151,19 @@ export default function SearchResultDescription({
                   leftIcon={<TagIconSm height="12" />}
                 >
                   {Categories[item.category]}
+                </Button>
+              </Tooltip>
+            </WrapItem>
+          )}
+          {item.series && (
+            <WrapItem>
+              <Tooltip label="Series">
+                <Button
+                  onClick={() => setQuery(item.series ?? '')}
+                  size="xs"
+                  leftIcon={<RectangleStack height="12" />}
+                >
+                  {item.series}
                 </Button>
               </Tooltip>
             </WrapItem>

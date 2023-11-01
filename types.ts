@@ -1,6 +1,7 @@
 export interface Item {
   objectID: string;
   ascensionNumber?: number;
+  series?: string;
   group?: Group;
   category?: Category;
   creator?: string;

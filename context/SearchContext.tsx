@@ -24,11 +24,17 @@ const SearchContext = React.createContext<SearchContextType>({
   setType: () => {},
 });
 
-function getQueryValue<T>(queryValue: string | string[] | undefined): T | undefined {
-  return (Array.isArray(queryValue) ? queryValue[0] : queryValue) as T | undefined;
+function getQueryValue<T>(
+  queryValue: string | string[] | undefined
+): T | undefined {
+  return (Array.isArray(queryValue) ? queryValue[0] : queryValue) as
+    | T
+    | undefined;
 }
 
-const createQueryObject = (query: { [key: string]: string | undefined }): { [key: string]: string } => {
+const createQueryObject = (query: {
+  [key: string]: string | undefined;
+}): { [key: string]: string } => {
   const entries = Object.entries(query).filter(([key, value]) => value);
 
   return Object.fromEntries(entries as any);
@@ -37,11 +43,15 @@ const createQueryObject = (query: { [key: string]: string | undefined }): { [key
 export default function SearchProvider({ ...props }) {
   const router = useRouter();
 
-  const [query, setQuery] = React.useState<string>(getQueryValue(router.query.q) ?? '');
+  const [query, setQuery] = React.useState<string>(
+    getQueryValue(router.query.q) ?? ''
+  );
   const [category, setCategory] = React.useState<Category | undefined>(
     getQueryValue(router.query.category) as Category | undefined
   );
-  const [group, setGroup] = React.useState<Group | undefined>(getQueryValue(router.query.group) as Group | undefined);
+  const [group, setGroup] = React.useState<Group | undefined>(
+    getQueryValue(router.query.group) as Group | undefined
+  );
   const [type, setType] = React.useState<ItemType | undefined>(
     getQueryValue(router.query.type) as ItemType | undefined
   );
@@ -55,9 +65,21 @@ export default function SearchProvider({ ...props }) {
 
   React.useEffect(() => {
     const id = setTimeout(() => {
-      router.push({ query: createQueryObject({ ...router.query, q: query, category, type, group }) }, undefined, {
-        shallow: true,
-      });
+      router.push(
+        {
+          query: createQueryObject({
+            ...router.query,
+            q: query,
+            category,
+            type,
+            group,
+          }),
+        },
+        undefined,
+        {
+          shallow: true,
+        }
+      );
     }, 500);
 
     return () => clearTimeout(id);
