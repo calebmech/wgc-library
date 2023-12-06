@@ -157,10 +157,11 @@ export default function Update() {
 
       if (typeof binaryStr === 'string') {
         const sheet = await csv({
-          ignoreEmpty: true,
-          delimiter: ['\t', '{'],
+          ignoreEmpty: false,
+          delimiter: ['\t'],
           quote: '{',
-        }).fromString(binaryStr);
+          escape: '"',
+        }).fromString(binaryStr.replaceAll('}', ''));
 
         const db: Item[] = sheet.map((item: Record<string, string>) => ({
           objectID: item.IDNO,
