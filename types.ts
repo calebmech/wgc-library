@@ -30,18 +30,18 @@ export enum ItemType {
 }
 
 export enum Group {
-  youth = 'Y',
   family = 'Family',
+  children = 'CH',
   junior = 'Jr',
-  childrens = 'CH',
+  youth = 'Y',
   ginosPick = "Gino's Pick",
 }
 
 export const groupToLabel: Record<Group, string> = {
-  Y: 'Youth',
   Family: 'Family',
-  Jr: 'Junior',
   CH: 'Children',
+  Jr: 'Junior',
+  Y: 'Youth',
   "Gino's Pick": "Gino's Pick",
 };
 
