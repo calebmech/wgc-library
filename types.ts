@@ -37,6 +37,14 @@ export enum Group {
   ginosPick = "Gino's Pick",
 }
 
+export const groupToLabel: Record<Group, string> = {
+  Y: 'Youth',
+  Family: 'Family',
+  Jr: 'Junior',
+  CH: 'Children',
+  "Gino's Pick": "Gino's Pick",
+};
+
 export enum Category {
   APOL = 'APOL',
   ARC = 'ARC',

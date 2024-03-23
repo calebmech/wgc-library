@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { useSearch } from '../../context/SearchContext';
-import { Categories, Item } from '../../types';
+import { Categories, groupToLabel, Item } from '../../types';
 import TypeIcon, { mapTypeToText } from '../FormatIcon';
 import AmazonIcon from '../icons/AmazonIcon';
 import BookIconSm from '../icons/BookIconSm';
@@ -137,7 +137,7 @@ export default function SearchResultDescription({
                   size="xs"
                   leftIcon={<UserGroupIconSm height="12" />}
                 >
-                  {item.group}
+                  {groupToLabel[item.group]}
                 </Button>
               </Tooltip>
             </WrapItem>

@@ -1,7 +1,7 @@
 import { Select, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { useSearch } from '../../context/SearchContext';
-import { Group } from '../../types';
+import { Group, groupToLabel } from '../../types';
 
 export default function GroupSelector() {
   const { group, setGroup } = useSearch();
@@ -24,11 +24,3 @@ export default function GroupSelector() {
     </Select>
   );
 }
-
-const groupToLabel: Record<Group, string> = {
-  Y: 'Youth',
-  Family: 'Family',
-  Jr: 'Junior',
-  CH: 'Children',
-  "Gino's Pick": "Gino's Pick",
-};
