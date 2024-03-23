@@ -30,11 +30,10 @@ export enum ItemType {
 }
 
 export enum Group {
-  adult = 'Adult',
-  youth = 'Youth',
+  youth = 'Y',
   family = 'Family',
-  junior = 'Junior',
-  childrens = 'Childrens',
+  junior = 'Jr',
+  childrens = 'CH',
   ginosPick = "Gino's Pick",
 }
 
