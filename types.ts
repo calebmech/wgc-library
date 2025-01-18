@@ -1,12 +1,14 @@
 export interface Item {
   objectID: string;
   ascensionNumber?: number;
+  section?: string;
   series?: string;
   group?: Group;
   category?: Category;
   creator?: string;
   genres?: string;
   deweyDecimal?: string;
+  call?: string;
   type?: ItemType;
   isbn?: string;
   pages?: number;

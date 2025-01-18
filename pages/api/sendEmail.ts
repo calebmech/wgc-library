@@ -114,10 +114,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
               <ul>
                 <li>Audience: ${item.group}</li>
+                <li>Section: ${item.section ?? 'Unknown'}</li>
                 <li>Category: ${
                   item.category ? Categories[item.category] : 'Unknown'
                 }</li>
-                <li>Dewey: ${item.deweyDecimal ?? 'Unknown'}</li>
+                <li>Series: ${item.series ?? 'None'}</li>
+                <li>CALL: ${item.call ?? 'Unknown'}</li>
                 <li>Type: ${item.type ?? 'Unknown'}</li>
                 <li>Format: ${item.format ?? 'Unknown'}</li>
                 <li>Barcode: ${item.barcode ?? 'Unknown'}</li>
