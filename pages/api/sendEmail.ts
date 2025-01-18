@@ -1,6 +1,7 @@
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Categories, Item } from '../../types';
+import { mapTypeToText } from '../../components/FormatIcon';
 
 const libraryEmail = process.env.NEXT_PUBLIC_LIBRARY_EMAIL!;
 
@@ -120,7 +121,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 }</li>
                 <li>Series: ${item.series ?? 'None'}</li>
                 <li>CALL: ${item.call ?? 'Unknown'}</li>
-                <li>Type: ${item.type ?? 'Unknown'}</li>
+                <li>Type: ${mapTypeToText(item.type) ?? 'Unknown'}</li>
                 <li>Format: ${item.format ?? 'Unknown'}</li>
                 <li>Barcode: ${item.barcode ?? 'Unknown'}</li>
                 <li>Kit #: ${item.kitId ?? 'None'}</li>

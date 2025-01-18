@@ -174,7 +174,7 @@ export default function Update() {
           genres: item.SUBJECTS,
           group: item.AUDIENCE as Group,
           creator: item.AUTHOR,
-          type: item.TYPE as ItemType,
+          type: item.TYPE.toLowerCase() as ItemType,
           isbn: item.ISBN,
           pages: parseInt(item.PAGES) ? parseInt(item.PAGES) : undefined,
           releaseDate: item.PUBLISHED,

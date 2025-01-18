@@ -26,9 +26,9 @@ export interface Item {
 }
 
 export enum ItemType {
-  book = 'Book',
-  movie = 'Movie',
-  music = 'Music',
+  book = 'book',
+  movie = 'movie',
+  music = 'music',
 }
 
 export enum Group {
