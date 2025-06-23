@@ -7,6 +7,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       'WWW-Authenticate',
       'Basic realm="Access to update library data", charset="UTF-8"'
     );
+    context.res.end();
     return { props: {} };
   }
   const auth = context.req.headers.authorization.split(' ');
@@ -27,7 +28,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   context.res.statusCode = 401;
   context.res.setHeader(
     'WWW-Authenticate',
-    'Basic realm="Access to staging site", charset="UTF-8"'
+    'Basic realm="Access to update library data", charset="UTF-8"'
   );
+  context.res.end();
   return { props: {} };
 };
